@@ -16,7 +16,7 @@ minimal_mistakes_skin    : "dark" # "air", "aqua", "contrast", "dark", "dirt", "
 
 # Site Settings
 locale                   : "ko-KR"
-title                    : "SoftHamzzi 블로그"
+title                    : "햄랑의 개발 노트📝"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "햄랑"
