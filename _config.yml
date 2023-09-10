@@ -104,11 +104,11 @@ analytics:
 
 # Site Author
 author:
-  name             : "Your Name"
+  name             : "햄랑"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "I am an **amazing** person."
-  location         : "Somewhere"
-  email            :
+  bio              : "공부했던 것들을 남기는 곳입니다:)"
+  location         : "부산"
+  email            : "wnsgnswls1@naver.com"
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
