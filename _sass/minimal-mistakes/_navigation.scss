@@ -439,10 +439,11 @@
 
 .nav__list .nav__items {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.25rem; // (1.25)사이드바 카테고리 폰트크기 한번에 조정
 
   a {
     color: inherit;
+    font-size: $type-size-3; // 없던건데 추가함
   }
 
   .active {
@@ -484,16 +485,16 @@
   margin: 0;
   padding: 0.5rem 0.75rem;
   font-family: $sans-serif-narrow;
-  font-size: $type-size-5;
+  font-size: $type-size-5; // 사이드바의 서브 타이틀보다 높은게 있나봄
   font-weight: bold;
 }
 
-.nav__sub-title {
+.nav__sub-title { // 사이드바 서브 타이틀
   display: block;
   margin: 0.5rem 0;
   padding: 0.25rem 0;
   font-family: $sans-serif-narrow;
-  font-size: $type-size-6;
+  font-size: $type-size-4;
   font-weight: bold;
   text-transform: uppercase;
   border-bottom: 1px solid $border-color;
@@ -514,7 +515,7 @@
 
   .nav__title {
     color: #fff;
-    font-size: $type-size-6;
+    font-size: $type-size-5; // On This Page 폰트 크기
     background: $primary-color;
     border-top-left-radius: $border-radius;
     border-top-right-radius: $border-radius;
@@ -531,10 +532,10 @@
   padding: 0;
   width: 100%;
   list-style: none;
-  font-size: $type-size-6;
+  font-size: $type-size-1;
 
   @include breakpoint($large) {
-    font-size: $type-size-7;
+    font-size: $type-size-6; // On This Page 내부 폰트 크기
   }
 
   a {

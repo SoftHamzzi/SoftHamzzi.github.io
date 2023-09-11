@@ -31,7 +31,7 @@
   }
 }
 
-.archive__subtitle {
+.archive__subtitle { // 카테고리 이름 표시
   margin: 1.414em 0 0.5em;
   padding-bottom: 0.5em;
   font-size: $type-size-5;
@@ -72,9 +72,9 @@
   }
 }
 
-.archive__item-excerpt {
+.archive__item-excerpt { // 글에 대한 설명
   margin-top: 0;
-  font-size: $type-size-6;
+  font-size: $type-size-5;
 
   & + p {
     text-indent: 0;
