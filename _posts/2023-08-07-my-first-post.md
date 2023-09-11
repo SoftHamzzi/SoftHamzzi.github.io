@@ -3,7 +3,7 @@ title:  "테스트1"
 excerpt: "테스트1 설명"
 
 categories:
-  - [Blog, test]
+  - test
 tags:
   - [Blog, jekyll, Github, Git]
 
