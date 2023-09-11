@@ -1,9 +1,9 @@
 # main links
 main:
   - title: "Home"
-    url: https://SoftHamzzi.github.io
+    url: /index.html
   - title: "Category"
-    url: https://SoftHamzzi.github.io/categories/
+    url: /categories/
   # - title: "Sample Posts"
   #   url: /year-archive/
   # - title: "Sample Collections"
