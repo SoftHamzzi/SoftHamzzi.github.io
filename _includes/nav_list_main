@@ -11,8 +11,8 @@
       <span class="nav__sub-title">테스트 서브 타이틀</span>
             <ul>
                 {% for category in site.categories %}
-                    {% if category[0] == "테스트 카테고리" %}
-                        <li><a href="/categories/cpp" class="">C ++ ({{category[1].size}})</a></li>
+                    {% if category[0] == "test" %}
+                        <li><a href="/categories/test" class="">C ++ ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
