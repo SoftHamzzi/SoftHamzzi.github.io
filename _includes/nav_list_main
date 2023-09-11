@@ -2,7 +2,7 @@
 
 <nav class="nav__list">
   <input id="ac-toc" name="accordion-toc" type="checkbox" />
-  <label for="ac-toc">{{ site.data.ui-text[site.locale].menu_label | default: "Toggle Menu" }}</label>
+  <label for="ac-toc">{{ site.data.ui-text[site.locale].menu_label }}</label>
   <ul class="nav__items" id="category_tag_menu">
     <li>
         📂 <span style="font-family:'omyu_pretty';">전체 글 수 {{sum}}개</style> 
@@ -12,11 +12,10 @@
             <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "test" %}
-                        <li><a href="/categories/test" class="">C ++ ({{category[1].size}})</a></li>
+                        <li><a href="/categories/test" class="">테스트 ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
       </li>
-    {% endfor %}
   </ul>
 </nav>
