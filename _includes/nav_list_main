@@ -16,7 +16,7 @@
                     {% endif %}
                 {% endfor %}
             </ul>
-      </li>
+
       <span class="nav__sub-title">Blender</span>
             <ul>
                 {% for category in site.categories %}
@@ -25,7 +25,7 @@
                     {% endif %}
                 {% endfor %}
             </ul>
-      </li>
+
       <span class="nav__sub-title">Graphics</span>
             <ul>
                 {% for category in site.categories %}
@@ -34,7 +34,7 @@
                     {% endif %}
                 {% endfor %}
             </ul>
-      </li>
+
       <span class="nav__sub-title">Coding Test</span>
             <ul>
                 {% for category in site.categories %}
@@ -43,7 +43,7 @@
                     {% endif %}
                 {% endfor %}
             </ul>
-      </li>
+
       <span class="nav__sub-title">Server</span>
             <ul>
                 {% for category in site.categories %}
@@ -52,7 +52,7 @@
                     {% endif %}
                 {% endfor %}
             </ul>
-      </li>
+
       <span class="nav__sub-title">DB</span>
             <ul>
                 {% for category in site.categories %}
@@ -61,7 +61,7 @@
                     {% endif %}
                 {% endfor %}
             </ul>
-      </li>
+
       <span class="nav__sub-title">HTML/CSS3/JS</span>
             <ul>
                 {% for category in site.categories %}
@@ -70,7 +70,7 @@
                     {% endif %}
                 {% endfor %}
             </ul>
-      </li>
+
       <span class="nav__sub-title">etc</span>
             <ul>
                 {% for category in site.categories %}
