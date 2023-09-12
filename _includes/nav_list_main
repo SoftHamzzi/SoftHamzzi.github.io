@@ -8,7 +8,70 @@
         📂 <span style="font-family:'omyu_pretty';">전체 글 수 {{sum}}개</style> 
     </li>
     <li>
-      <span class="nav__sub-title">테스트 서브 타이틀</span>
+      <span class="nav__sub-title">Unreal Engine</span>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "test" %}
+                        <li><a href="/categories/test" class="">테스트 ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+      </li>
+      <span class="nav__sub-title">Blender</span>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "test" %}
+                        <li><a href="/categories/test" class="">테스트 ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+      </li>
+      <span class="nav__sub-title">Graphics</span>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "test" %}
+                        <li><a href="/categories/test" class="">테스트 ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+      </li>
+      <span class="nav__sub-title">Coding Test</span>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "test" %}
+                        <li><a href="/categories/test" class="">테스트 ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+      </li>
+      <span class="nav__sub-title">Server</span>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "test" %}
+                        <li><a href="/categories/test" class="">테스트 ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+      </li>
+      <span class="nav__sub-title">DB</span>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "test" %}
+                        <li><a href="/categories/test" class="">테스트 ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+      </li>
+      <span class="nav__sub-title">HTML/CSS3/JS</span>
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "test" %}
+                        <li><a href="/categories/test" class="">테스트 ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+      </li>
+      <span class="nav__sub-title">etc</span>
             <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "test" %}
