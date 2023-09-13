@@ -1,6 +1,6 @@
 ---
-title:  "테스트1"
-excerpt: "테스트1 설명"
+title:  "고구마"
+excerpt: "고구마구만"
 
 categories:
   - test
