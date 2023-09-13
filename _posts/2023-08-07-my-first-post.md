@@ -5,7 +5,7 @@ excerpt: "고구마구만"
 categories:
   - test
 tags:
-  - [Blog, 고구마]
+  - [Blog, Sweetpotato]
 
 toc: true
 toc_sticky: true
