@@ -1,11 +1,11 @@
 ---
-title:  "고구마"
+title:  "고구마🍠"
 excerpt: "고구마구만"
 
 categories:
   - test
 tags:
-  - [Blog, jekyll, Github, Git]
+  - [Blog, 고구마]
 
 toc: true
 toc_sticky: true
