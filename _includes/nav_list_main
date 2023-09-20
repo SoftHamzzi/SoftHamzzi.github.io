@@ -39,7 +39,7 @@
             <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Bakejoon" %}
-                        <li><a href="/categories/Baekjoon" class="">백준 ({{category[1].size}})</a></li>
+                        <li><a href="/categories/baekjoon" class="">백준 ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
