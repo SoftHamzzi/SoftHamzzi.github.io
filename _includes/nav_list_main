@@ -38,8 +38,8 @@
       <span class="nav__sub-title">Coding Test</span>
             <ul>
                 {% for category in site.categories %}
-                    {% if category[0] == "test" %}
-                        <li><a href="/categories/test" class="">테스트 ({{category[1].size}})</a></li>
+                    {% if category[0] == "bakejoon" %}
+                        <li><a href="/categories/baekjoon" class="">백준 ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
