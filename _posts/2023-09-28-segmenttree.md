@@ -3,7 +3,7 @@ title:  "세그먼트 트리"
 excerpt: "세그먼트 트리를 구현합니다."
 
 categories:
-  - Baekjoon
+  - Algorithm
 tags:
   - [Blog, Baekjoon, Algorithm, C++]
 
