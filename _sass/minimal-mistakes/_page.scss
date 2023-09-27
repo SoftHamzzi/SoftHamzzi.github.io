@@ -71,6 +71,7 @@ body {
 .page__title {
   margin-top: 0;
   line-height: 1;
+  color: mix(#fff, $primary-color, 40%); // 추가됨
 
   a {
     color: $text-color;
