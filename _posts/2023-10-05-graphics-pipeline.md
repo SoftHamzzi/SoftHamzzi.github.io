@@ -31,13 +31,13 @@ last_modified_at: 2023-10-05
 기본 도형에서 점, 선 등을 수정할 수 있게 해주는 쉐이더이다. 필요할 때마다 도형을 수정해 사용할 수 있어서 성능 향상에 도움을 줄 수 있다. 
 ### 5. Rasterization 단계
 3D 도형이 픽셀로 변경되는 과정이다. 정점 사이의 공간은 색 보간을 통해 픽셀에 적절히 반영된다. 이 과정에서는 아직 색깔이 존재하지 않는다.
-### 6. Fragment Shader 단계계
+### 6. Fragment Shader 단계
 래스트화된 픽셀에 색을 입혀주는 과정이다. 라이팅과 그림자, 투명도, 텍스쳐 색상은 모두 이 과정에서 입혀지게 된다.
 
 ## 결론
 이러한 과정을 통틀어 렌더링 파이프라인이라고 한다. OpenGL, DirectX11, Vulkan 등등 다양한 그래픽스 API에서 사용되며, 각자의 구현방식은 다를 수 있다.
 
-
+---
 # 참고
 [[Computer Graphics] #18. GPU 테셀레이션 | Dandi (choi-dan-di.github.io)](https://choi-dan-di.github.io/computer-graphics/surface-tessellation/)
 <br><br>
