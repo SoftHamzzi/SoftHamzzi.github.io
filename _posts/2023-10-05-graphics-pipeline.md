@@ -3,9 +3,9 @@ title:  "렌더링 파이프라인 정리"
 excerpt: "3D 오브젝트가 화면에 나타나는 과정을 정리한 글"
 
 categories:
-  - Graphics
+  - OpenGL
 tags:
-  - [Graphics]
+  - [OpenGL, Graphics]
 
 toc: true
 toc_sticky: true
