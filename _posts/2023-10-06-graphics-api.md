@@ -13,9 +13,9 @@ toc_sticky: true
 date: 2023-10-06
 last_modified_at: 2023-10-06
 ---
-매우 급하게 쓰여진 글이므로 잘못된 부분이 매우 많을 수 있습니다!
+매우 급하게 쓰여진 대학교 과제 글이므로 잘못된 부분이 매우 많을 수 있습니다!
 <br>
-참고 부탁드립니다.
+ChatGPT또한 사용한 점 참고 부탁드립니다.
 {: .notice--warning}
 # 그래픽스 API 비교 보고서
 ---
@@ -83,8 +83,8 @@ API 유형	하이레벨 API	로우레벨API	하이레벨API	자바스크립트 A
 여기까지 그래픽 API들에 대해 알아보았다.  DirectX 11 및 DirectX 12는 Windows 플랫폼에 최적화되어 있다. OpenGL 및 OpenGL ES는 크로스 플랫폼 지원을 제공하며, WebGL은 웹 브라우저에서 3D 그래픽을 사용할 때 유용하다. Vulkan은 로우레벨 API로 다중 스레딩과 CPU 활용하여 성능을 향상시키며, Metal은 Apple 생태계에서 뛰어난 성능을 보여준다. 그러므로 그래픽 API는 개발 플랫폼, 개발자의 경험, 성능 요구 사항 및 프로젝트 목표에 따라 신중히 결정해야 할 것이다.
 
 # 레퍼런스
-1. 다이렉트X 11과 다이렉트X 12 사이에는 정확히 어떤 차이가 있을까? (tistory.com)
-2. [OpenGL] OpenGL이란? (tistory.com)
-3. WebGL이란? (velog.io)
-4. Vulkan이란? : 네이버 블로그 (naver.com)
-5. 메탈 (API) - 위키백과, 우리 모두의 백과사전 (wikipedia.org)
+[1] "제이의 미디어 유니버스." 제이의 IT 월드 다이렉트X 11과 다이렉트X 12 사이에는 정확히 어떤 차이가 있을까? n.d. 수정, 2023년 10월 6일 접속, https://stg1994.tistory.com/934.
+[2] "GoFo 혼자하는 코딩." [OpenGL] OpenGL이란? n.d. 수정, 2023년 10월 6일 접속, https://gofo-coding.tistory.com/entry/OpenGL.
+[3] "0hyo." WebGL이란? n.d. 수정, 2023년 10월 6일 접속, https://velog.io/@0hyo/WebGL%EC%9D%B4%EB%9E%80.
+[4] "삼각형의 소프트웨어 세상." Vulkan이란? n.d. 수정, 2023년 10월 6일 접속, https://blog.naver.com/dmatrix/221808847792.
+[5] "Wikipedia." Metal (API). n.d. 수정, 2023년 10월 6일 접속, https://en.wikipedia.org/wiki/Metal_(API).
