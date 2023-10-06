@@ -17,8 +17,8 @@
       <span class="nav__sub-title">Graphics</span>
             <ul>
                 {% for category in site.categories %}
-                    {% if category[0] == "OpenGL" %}
-                        <li><a href="/categories/opengl" class="">OpenGL ({{category[1].size}})</a></li>
+                    {% if category[0] == "GraphicsDoc" %}
+                        <li><a href="/categories/graphics_doc" class="">그래픽스 문서 ({{category[1].size}})</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
