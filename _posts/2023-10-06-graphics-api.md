@@ -41,12 +41,13 @@ DirectX12가 DirectX11에 비해 이론적으로는 모든 면에서 기술적�
 이러한 현상이 벌어지는 이유는 다음과 같다.
 DirectX12는  AMD에서 개발한 Mantle에서 선보인 아이디어를 기반으로 한 로우레벨 API이다. 타사의 기술을 기반으로 한 로우 레벨 API에 호환성이나 안정성이 떨어질 수 밖에 없었다. 그러므로 개발을 할 때 어려운 프로세스 과정을 사용하고, 다른 하드웨어와의 안정성이 떨어지는 이유로 악효과가 생기게 되었다. 또한, 다이렉트X11이 이전 버전인 만큼 안정성이나 개발 환경이 더 간편하다는 이유도 있다.
 
-비교 항목	DirectX11	DirectX12
-지원 플랫폼	Windows	Windows 10 이상
-API 유형	하이레벨 API	로우레벨 API
-성능	높은 성능, 오버헤드 존재	낮은 CPU 오버헤드, 뛰어난 최적화
-멀티스레딩	제한적	멀티스레딩 지원
-개발 언어	C++, C# 등	C++, C#, DirectX12 API
+|비교 항목|DirectX11|DirectX12|
+|---|---|---|
+|지원 플랫폼|Windows|Windows 10 이상|
+|API 유형|하이레벨 API|로우레벨 API|
+|성능|높은 성능, 오버헤드 존재|낮은 CPU 오버헤드, 뛰어난 최적화|
+|멀티스레딩|제한적|멀티스레딩 지원|
+|개발 언어|C++, C# 등|C++, C#, DirectX12 API|
 
 ## 2. OpenGL
 OpenGL은 크로스 플랫폼 지원을 강조하는 그래픽 API로, Windows, macOS, Linux 등 다양한 운영 체제에서 사용할 수 있다. 다음은 OpenGL의 주요 특징이다.
@@ -71,13 +72,14 @@ Metal은 Apple의 iOS 및 macOS 플랫폼을 위한 로우레벨 그래픽 API�
 첫째, Apple 플랫폼 지원. Metal은 iOS 및 macOS에서 주로 사용되며, Apple 생태계에서 좋은 성능을 낸다.
 둘째, 로우레벨 API. 메모리 및 스레딩 관리를 직접 할 수 있어 최적화에 유리하다. 개발자가 하드웨어를 직접 제어할 수 있어, 렌더링 성능을 최대한 끌어올릴 수 있다.
 
-비교 항목	DirectX11	DirectX12	OpenGL	WebGL	Vulkan	Metal
-개발사	Microsoft	Microsoft	Khronos Group	Khronos Group	Khronos Group	Apple
-플랫폼	Windows	Windows 10 이상	크로스 플랫폼(Windows, macOS, Linux)	웹 브라우저 기반(크로스 플랫폼)	크로스 플랫폼(Windows, macOS, Linux)	macOS, IOS
-API 유형	하이레벨 API	로우레벨API	하이레벨API	자바스크립트 API	하이레벨 API	로우레벨 API
-성능	높은 성능, 오버헤드 존재	낮은 CPU 오버헤드, 뛰어난 최적화	성능 다소 떨어짐	성능 제한	최적화와 높은 성능	높은 성능, Apple 생태계에 최적
-개발 언어	C++, C# 등	C++, C#, DirectX12 API	C, C++, Python 등	JavaScript	C, C++, Rust 등	Objective-C, Swift
-개발도구	DirectX SDK, 라이브러리 다수	Windows SDK, DirectX Tool Kit 등	OpenGL SDK	WebGL GPI 및 라이브러리	Vulkan SDK, 라이브러리 다수	Xcode, Metal Kit
+|비교 항목|DirectX11|DirectX12|OpenGL|WebGL|Vulkan|Metal|
+|---|---|---|---|---|---|---|
+|개발사|Microsoft|Microsoft|Khronos Group|Khronos Group|Khronos Group|Apple|
+|플랫폼|Windows|Windows 10 이상|크로스 플랫폼(Windows, macOS, Linux)|웹 브라우저 기반(크로스 플랫폼)|크로스 플랫폼(Windows, macOS, Linux)|macOS, IOS|
+|API 유형|하이레벨 API|로우레벨API|하이레벨API|자바스크립트 API|하이레벨 API|로우레벨 API|
+|성능|높은 성능, 오버헤드 존재|낮은 CPU 오버헤드, 뛰어난 최적화|성능 다소 떨어짐|성능 제한|최적화와 높은 성능	높은 성능|Apple 생태계에 최적|
+|개발 언어|C++, C# 등|C++, C#, DirectX12 API|C, C++, Python 등|JavaScript|C, C++, Rust 등|Objective-C, Swift|
+|개발도구|DirectX SDK, 라이브러리 다수|Windows SDK, DirectX Tool Kit 등|OpenGL SDK|WebGL GPI 및 라이브러리|Vulkan SDK, 라이브러리 다수	|Xcode, Metal Kit|
 
 # 3. 결론
 여기까지 그래픽 API들에 대해 알아보았다.  DirectX 11 및 DirectX 12는 Windows 플랫폼에 최적화되어 있다. OpenGL 및 OpenGL ES는 크로스 플랫폼 지원을 제공하며, WebGL은 웹 브라우저에서 3D 그래픽을 사용할 때 유용하다. Vulkan은 로우레벨 API로 다중 스레딩과 CPU 활용하여 성능을 향상시키며, Metal은 Apple 생태계에서 뛰어난 성능을 보여준다. 그러므로 그래픽 API는 개발 플랫폼, 개발자의 경험, 성능 요구 사항 및 프로젝트 목표에 따라 신중히 결정해야 할 것이다.
