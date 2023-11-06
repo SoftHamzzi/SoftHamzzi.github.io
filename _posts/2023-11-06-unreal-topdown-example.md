@@ -16,8 +16,14 @@ last_modified_at: 2023-11-06
 
 언리얼엔진의 구조는 여기에서 확인할 수 있다.
 [Unreal Engine API Reference | Unreal Engine 5.2 Documentation](https://docs.unrealengine.com/5.3/en-US/API/)
+{: .notice--primary}
 
+PlayerController.cpp를 기반으로 작성되었으며, 처음으로 분석한 글이기에 읽기에 구조가 불편할 수 있습니다.  
+또한 오류가 있다면 지적해주시면 감사드리겠습니다😌
+{: .notice--warning}
 ---
+
+
 # 1. 생성자
 ```cpp
 AThirdPlayerController::AThirdPlayerController() {
@@ -137,13 +143,13 @@ void AThirdPlayerController::SetupInputComponent()
 - 유형 : 클래스
 - 부모 : UInputComponent
 
-SetDestinationClickAction :  UInputAction을 담기위한 변수를 헤더에서 따로 선언해준 것
+SetDestinationClickAction : UInputAction을 담기위한 변수를 헤더에서 따로 선언해준 것
 - 파일 : 헤더파일에 있음
 - 유형 : 변수
 - 접근자 : public
 - 자료형 : UInputAction*
 
-[ETriggerEvent](https://docs.unrealengine.com/4.27/en-US/API/Plugins/EnhancedInput/ETriggerEvent/) :
+[ETriggerEvent](https://docs.unrealengine.com/4.27/en-US/API/Plugins/EnhancedInput/ETriggerEvent/) : 액션의 동작을 제어하고 이해하는데 사용된다.
 - 파일 : InputTriggers.h
 - 유형 : enum
 - 값
@@ -206,7 +212,7 @@ void AThirdPlayerController::OnSetDestinationTriggered()
 }
 ```
 
-[GetWorld](https://docs.unrealengine.com/4.26/en-US/API/Runtime/Engine/Engine/UWorld/GetWorld/) :
+[GetWorld](https://docs.unrealengine.com/4.26/en-US/API/Runtime/Engine/Engine/UWorld/GetWorld/) : 월드를 반환한다.
 - 파일 : World.h
 - 유형 : 함수
 - 인자 : void
