@@ -9,6 +9,13 @@
     </li>
     <li>
       <span class="nav__sub-title">Unreal Engine</span>
+        <ul>
+            {% for category in site.categories %}
+                {% if category[0] == "UE5 Insight" %}
+                    <li><a href="/categories/ue5_insight" class="">언리얼엔진 분석 ({{category[1].size}})</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
 
 
       <span class="nav__sub-title">Blender</span>
