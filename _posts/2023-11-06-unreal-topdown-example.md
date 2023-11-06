@@ -13,9 +13,11 @@ toc_sticky: true
 date: 2023-11-06
 last_modified_at: 2023-11-06
 ---
+
 언리얼엔진의 구조는 여기에서 확인할 수 있다.
 [Unreal Engine API Reference | Unreal Engine 5.2 Documentation](https://docs.unrealengine.com/5.3/en-US/API/)
 
+---
 # 1. 생성자
 ```cpp
 AThirdPlayerController::AThirdPlayerController() {
@@ -56,6 +58,7 @@ FollowTime : 마우스 클릭 혹은 터치를 얼마나 오래 했는지 기록
 - 접근자 : private
 - 자료형 : float
 
+---
 # 2. BeginPlay()
 ```cpp
 void AThirdPlayerController::BeginPlay()
@@ -99,6 +102,8 @@ Input Action > Input Mapping Context > Input Local Player Subsystem
 - 인자 : void
 - 반환값 : ULocalPlayer
 - 클래스 : APlayerController
+
+---
 # 3. SetupInputComponent()
 
 ```cpp
@@ -149,6 +154,7 @@ SetDestinationClickAction :  UInputAction을 담기위한 변수를 헤더에�
 	- Triggered : 하나 이상의 처리 틱 이후 트리거 발생
 	- Completed : 트리거 상태가 이 프레임에서 Triggered에서 None으로 전환되었다. 즉, 트리거 처리가 완료되었다.
 
+---
 # 4. OnInputStarted()
 
 ```cpp
@@ -165,6 +171,7 @@ void AThirdPlayerController::OnInputStarted()
 - 반환값 : void
 - 클래스 : AController
 
+---
 # 5. OnSetDestinationTriggered()
 
 ```cpp
@@ -269,6 +276,7 @@ void AThirdPlayerController::OnSetDestinationTriggered()
 - 반환값 : void
 - 클래스 : APawn
 
+---
 # 6. OnSetDestinationReleased()
 
 ```cpp
