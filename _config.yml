@@ -18,6 +18,7 @@ minimal_mistakes_skin    : "dark" # "air", "aqua", "contrast", "dark", "dirt", "
 locale                   : "ko-KR"
 title                    : "햄랑의 개발 노트📝"
 title_separator          : "-"
+published                : true
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "햄랑"
 description              : "블로그 개발중입니다."
