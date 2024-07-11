@@ -8,7 +8,7 @@
         📂 <span style="font-family:'omyu_pretty';">전체 글 수 {{sum}}개</style> 
     </li>
     <li>
-      <span class="nav__sub-title">Game Engine</span>
+      <span class="nav__sub-title">Game Dev</span>
         <ul>
             {% for category in site.categories %}
                 {% if category[0] == "UE5 Insight" %}
