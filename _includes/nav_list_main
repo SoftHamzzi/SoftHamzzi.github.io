@@ -8,11 +8,16 @@
         📂 <span style="font-family:'omyu_pretty';">전체 글 수 {{sum}}개</style> 
     </li>
     <li>
-      <span class="nav__sub-title">Unreal Engine</span>
+      <span class="nav__sub-title">Game Engine</span>
         <ul>
             {% for category in site.categories %}
                 {% if category[0] == "UE5 Insight" %}
                     <li><a href="/categories/ue5_insight" class="">언리얼엔진 분석 ({{category[1].size}})</a></li>
+                {% endif %}
+            {% endfor %}
+            {% for category in site.categories %}
+                {% if category[0] == "Techniques" %}
+                    <li><a href="/categories/techniques" class="">기술 ({{category[1].size}})</a></li>
                 {% endif %}
             {% endfor %}
         </ul>
@@ -30,7 +35,7 @@
                 {% endfor %}
             </ul>
 
-      <span class="nav__sub-title">Coding Test</span>
+      <span class="nav__sub-title">PS</span>
             <ul>
                 {% for category in site.categories %}
                     {% if category[0] == "Baekjoon" %}
