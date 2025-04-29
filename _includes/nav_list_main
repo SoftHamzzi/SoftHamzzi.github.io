@@ -21,7 +21,7 @@
                 {% endif %}
             {% endfor %}
             {% for category in site.categories %}
-                {% if category[0] == "Techniques" %}
+                {% if category[0] == "Cpp" %}
                     <li><a href="/categories/cpp" class="">C++ ({{category[1].size}})</a></li>
                 {% endif %}
             {% endfor %}
@@ -64,7 +64,13 @@
             </ul>
 
       <span class="nav__sub-title">Server</span>
-
+            <ul>
+                {% for category in site.categories %}
+                    {% if category[0] == "GameServer" %}
+                        <li><a href="/categories/game_server" class="">게임 서버 ({{category[1].size}})</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
 
       <span class="nav__sub-title">DB</span>
 
