@@ -8,6 +8,31 @@
         📂 <span style="font-family:'omyu_pretty';">전체 글 수 {{sum}}개</style> 
     </li>
     <li>
+
+      <span class="nav__sub-title">Routine</span>
+        <ul>
+            {% for category in site.categories %}
+                {% if category[0] == "Daily" %}
+                    <li><a href="/categories/daily" class="">일간 회고 ({{category[1].size}})</a></li>
+                {% endif %}
+            {% endfor %}
+            {% for category in site.categories %}
+                {% if category[0] == "Weekly" %}
+                    <li><a href="/categories/study" class="">주간 회고 ({{category[1].size}})</a></li>
+                {% endif %}
+            {% endfor %}
+            {% for category in site.categories %}
+                {% if category[0] == "Monthly" %}
+                    <li><a href="/categories/monthly" class="">월간 회고 ({{category[1].size}})</a></li>
+                {% endif %}
+            {% endfor %}
+            {% for category in site.categories %}
+                {% if category[0] == "Yearly" %}
+                    <li><a href="/categories/reading" class="">연간 회고 ({{category[1].size}})</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    
       <span class="nav__sub-title">Game Dev</span>
         <ul>
             {% for category in site.categories %}
@@ -28,7 +53,7 @@
         </ul>
 
 
-      <span class="nav__sub-title">Blender</span>
+      <!-- <span class="nav__sub-title">Blender</span> -->
 
 
       <span class="nav__sub-title">Graphics</span>
@@ -72,10 +97,10 @@
                 {% endfor %}
             </ul>
 
-      <span class="nav__sub-title">DB</span>
+      <!-- <span class="nav__sub-title">DB</span>
 
 
-      <span class="nav__sub-title">HTML/CSS3/JS</span>
+      <span class="nav__sub-title">HTML/CSS3/JS</span> -->
 
 
       <span class="nav__sub-title">etc</span>
