@@ -28,7 +28,7 @@
             {% endfor %}
             {% for category in site.categories %}
                 {% if category[0] == "Yearly" %}
-                    <li><a href="/categories/reading" class="">연간 회고 ({{category[1].size}})</a></li>
+                    <li><a href="/categories/yearly" class="">연간 회고 ({{category[1].size}})</a></li>
                 {% endif %}
             {% endfor %}
         </ul>
