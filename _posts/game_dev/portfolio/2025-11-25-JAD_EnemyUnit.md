@@ -376,7 +376,7 @@ void UWPBipedalAnimInstance::AnimNotify_OnAttackEnd() {
 
 # 5. 어려웠던 점 🤔
 
-### 📌 에디터 뷰 한정 문제
+## 📌 에디터 뷰 한정 문제
 
 ![image.png](https://github.com/user-attachments/assets/2294e7cb-f2be-4e87-a352-c7ec5d31a1d2)
 
