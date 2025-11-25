@@ -66,7 +66,7 @@ BP_WPZombie | WPShieldComponent를 부착, 애니메이션, 스탯(e.g. 공격�
 
 ### ✅ 보스 몬스터
 
-```mermaid
+<div class="mermaid">
 ---
 config:
   layout: elk
@@ -79,7 +79,7 @@ flowchart BT
 	  B1("WPSwordMasterBoss") --> A
 	  B1 --> B
 	  B1 --> C
-```
+</div>
 
 **📌 상속 구조**
 
@@ -112,7 +112,7 @@ IWPBossInterface | 보스의 공격/피격시 행동, 패턴등을 구현한다.
 
 ![image.png](https://github.com/user-attachments/assets/e00412f4-7ea2-452e-8b9e-b21d89513b80)
 
-```mermaid
+<div class="mermaid">
 ---
 config:
   layout: dagre
@@ -127,7 +127,7 @@ flowchart TB
     outRange --> moveAction["적유닛 bool 값에 따른<br>예상 위치로 이동 또는 경계"]
     mid --> midAction["적유닛 enum 값에 따른<br>경계 임무 수행"]
     low --> lowAction["적유닛 enum 값에 따른<br>방심 임무 수행"]
-```
+</div>
 
 - 데코레이터, 서비스, 태스크를 직접 만들어, 비헤이비어 트리를 구성하였다.
 
@@ -260,7 +260,7 @@ void AWPBaseEnemyUnitAIController::SightLostTrack() {
 
 ## 2.3. 후드 아처(PillarArcher) - 중단
 
-```mermaid
+<div class="mermaid">
 ---
 config:
   layout: dagre
@@ -272,7 +272,7 @@ flowchart TB
     seq --> simpleP["simplePareller"] & moveNext["다음 기둥으로 이동"]
     simpleP --> attack["공격"] & moveToShot["사격 위치로 이동"]
     outSelect@{ shape: rect}
-```
+</div>
 
 - 기둥 구조물로 엄폐하며 싸우는 후드 아처가 다음 개발에 예정되어 있었다.
     - 일부 구현되어있었다.
@@ -368,7 +368,7 @@ void UWPBipedalAnimInstance::AnimNotify_OnAttackEnd() {
 ![image.png](https://github.com/user-attachments/assets/76575e11-e5ee-48c0-b60b-6f16f547dd33)
 
 <audio controls>
-	<source src="assets/audio/game_dev/portfolio/JAD_EnemyUnit/jad_zombie_die.mp3" type="audio/mp3">
+  <source src="{{ '/assets/audio/game_dev/portfolio/JAD_EnemyUnit/jad_zombie_die.mp3' | relative_url }}" type="audio/mp3">
 </audio>
 
 - 모듈레이터를 통해 피치, 볼륨을 랜덤하게 낼 수 있도록 했다.
