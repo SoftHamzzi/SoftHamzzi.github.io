@@ -36,6 +36,11 @@
       <span class="nav__sub-title">Game Dev</span>
         <ul>
             {% for category in site.categories %}
+                {% if category[0] == "Portfolio" %}
+                    <li><a href="/categories/portfolio" class="">C++ ({{category[1].size}})</a></li>
+                {% endif %}
+            {% endfor %}
+            {% for category in site.categories %}
                 {% if category[0] == "UE5 Insight" %}
                     <li><a href="/categories/ue5_insight" class="">언리얼엔진 분석 ({{category[1].size}})</a></li>
                 {% endif %}
