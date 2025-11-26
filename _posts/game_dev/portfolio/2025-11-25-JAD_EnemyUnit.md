@@ -363,7 +363,7 @@ void UWPBipedalAnimInstance::AnimNotify_OnAttackEnd() {
     - 원하는 소리가 없거나, 찾기 힘들었다.
     - 언리얼의 사운드 큐를 활용하여, 소리에 변형을 주거나 랜덤으로 출력하였다.
 
-### ✅ 구현
+## ✅ 구현
 
 ![image.png](https://github.com/user-attachments/assets/76575e11-e5ee-48c0-b60b-6f16f547dd33)
 
