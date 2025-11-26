@@ -116,7 +116,7 @@ flowchart BT
 ---
 config:
   layout: dagre
-  theme: base
+  theme: dark
   look: handDrawn
 ---
 flowchart TB
