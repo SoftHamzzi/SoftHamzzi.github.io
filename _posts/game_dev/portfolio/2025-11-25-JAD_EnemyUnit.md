@@ -9,6 +9,8 @@ tags:
 
 toc: true
 toc_sticky: true
+
+mermaid: true
  
 date: 2025-11-25
 last_modified_at: 2025-11-25
@@ -26,6 +28,8 @@ last_modified_at: 2025-11-25
 ---
 config:
   layout: dagre
+  theme: dark
+  look: handDrawn
 ---
 flowchart BT
 		A("WPBaseEnemyUnit") --> AC("ACharacter")
@@ -40,8 +44,7 @@ flowchart BT
 
 | 클래스 | 상속 | 설명 |
 | --- | --- | --- |
-| WPBaseEnemyUnit | ACharacter  
-IWPAttackTargetInterface | 최상위 기반 추상 클래스 |
+| WPBaseEnemyUnit | ACharacter<br>IWPAttackTargetInterface | 최상위 기반 추상 클래스 |
 | WPBipedalEnemyUnit | WPBaseEnemyUnit | 이족보행 추상 클래스 |
 | WPGhoulEnemyUnit | WPBaseEnemyUnit | 구울을 구현하기 위한 클래스 |
 | WPWarriorEnemyUnit | WPBipedalEnemyUnit | 좀비, 오크 등을 구현하기 위한 클래스 |
@@ -55,10 +58,7 @@ IWPAttackTargetInterface | 최상위 기반 추상 클래스 |
 
 | 클래스 | 블루프린트 | 설명 |
 | --- | --- | --- |
-| WPWarriorEnemyUnit | BP_WPOrcShieldWarrior
-BP_WPOrcArcher  
-BP_WPOrcSorcerer
-BP_WPZombie | WPShieldComponent를 부착, 애니메이션, 스탯(e.g. 공격력, 방어력)  설정 |
+| WPWarriorEnemyUnit | BP_WPOrcShieldWarrior<br>BP_WPOrcArcher<br>BP_WPOrcSorcerer<br>BP_WPZombie | WPShieldComponent를 부착, 애니메이션, 스탯(e.g. 공격력, 방어력)  설정 |
 | WPGhoulEnemyUnit | BP_WPArmorGhoul | 구울 전용 애니메이션, 스탯 설정 |
 | WPPillarArcher | BP_HoodOrcArcher | 엄폐물 탐색 BT Task 연동, 스탯 설정 |
 
@@ -66,28 +66,28 @@ BP_WPZombie | WPShieldComponent를 부착, 애니메이션, 스탯(e.g. 공격�
 
 ### ✅ 보스 몬스터
 
-<div class="mermaid">
+```mermaid
 ---
 config:
-  layout: elk
+  layout: dagre
+  theme: dark
+  look: handDrawn
 ---
 flowchart BT
-		A("ACharacter")
-		B("IWPAttackTargetInterface")
-		C("IWPBossInterface")
+	A("ACharacter")
+	B("IWPAttackTargetInterface")
+	C("IWPBossInterface")
     
-	  B1("WPSwordMasterBoss") --> A
-	  B1 --> B
-	  B1 --> C
-</div>
+	B1("WPSwordMasterBoss") --> A
+	B1 --> B
+	B1 --> C
+```
 
 **📌 상속 구조**
 
 | 클래스 | 상속 | 설명 |
 | --- | --- | --- |
-| WPSwordMasterBoss | ACharacter  
-IWPAttackTagetInterface  
-IWPBossInterface | 보스의 공격/피격시 행동, 패턴등을 구현한다. |
+| WPSwordMasterBoss | ACharacter<br>IWPAttackTagetInterface<br>IWPBossInterface | 보스의 공격/피격시 행동, 패턴등을 구현한다. |
 
 > IWPBossInterface
 > 
@@ -112,10 +112,12 @@ IWPBossInterface | 보스의 공격/피격시 행동, 패턴등을 구현한다.
 
 ![image.png](https://github.com/user-attachments/assets/e00412f4-7ea2-452e-8b9e-b21d89513b80)
 
-<div class="mermaid">
+```mermaid
 ---
 config:
   layout: dagre
+  theme: base
+  look: handDrawn
 ---
 flowchart TB
     root(["root"]) --> levelCheck["경계도 체크"]
@@ -127,7 +129,7 @@ flowchart TB
     outRange --> moveAction["적유닛 bool 값에 따른<br>예상 위치로 이동 또는 경계"]
     mid --> midAction["적유닛 enum 값에 따른<br>경계 임무 수행"]
     low --> lowAction["적유닛 enum 값에 따른<br>방심 임무 수행"]
-</div>
+```
 
 - 데코레이터, 서비스, 태스크를 직접 만들어, 비헤이비어 트리를 구성하였다.
 
@@ -260,10 +262,12 @@ void AWPBaseEnemyUnitAIController::SightLostTrack() {
 
 ## 2.3. 후드 아처(PillarArcher) - 중단
 
-<div class="mermaid">
+```mermaid
 ---
 config:
   layout: dagre
+  theme: dark
+  look: handDrawn
 ---
 flowchart TB
     root(["root"]) --> sel["select"]
@@ -272,7 +276,7 @@ flowchart TB
     seq --> simpleP["simplePareller"] & moveNext["다음 기둥으로 이동"]
     simpleP --> attack["공격"] & moveToShot["사격 위치로 이동"]
     outSelect@{ shape: rect}
-</div>
+```
 
 - 기둥 구조물로 엄폐하며 싸우는 후드 아처가 다음 개발에 예정되어 있었다.
     - 일부 구현되어있었다.
