@@ -19,10 +19,10 @@ en: &DEFAULT_EN
   less_than                  : "less than"
   minute_read                : "minute read"
   share_on_label             : "Share on"
-  meta_label                 :
+  meta_label                 : 
   tags_label                 : "Tags:"
   categories_label           : "Categories:"
-  date_label                 : "Updated:"
+  date_label                 : "Updateeed:"
   comments_label             : "Leave a comment"
   comments_title             : "Comments"
   more_label                 : "Learn more"
@@ -607,13 +607,14 @@ ko: &DEFAULT_KO
   search_label               :
   toc_label                  : "목차"
   ext_link_label             : "직접 링크"
+  last_modified_at           : "수정"
   less_than                  : "최대"
   minute_read                : "분 소요"
   share_on_label             : "공유하기"
-  meta_label                 :
+  meta_label                 : 
   tags_label                 : "태그:"
   categories_label           : "카테고리:"
-  date_label                 : "업데이트:"
+  date_label                 : "게시:"
   comments_label             : "댓글남기기"
   comments_title             : "댓글"
   more_label                 : "더 보기"
