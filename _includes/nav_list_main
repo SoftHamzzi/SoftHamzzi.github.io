@@ -41,11 +41,6 @@
                 {% endif %}
             {% endfor %}
             {% for category in site.categories %}
-                {% if category[0] == "UE5 Insight" %}
-                    <li><a href="/categories/ue5_insight" class="">언리얼엔진 분석 ({{category[1].size}})</a></li>
-                {% endif %}
-            {% endfor %}
-            {% for category in site.categories %}
                 {% if category[0] == "Techniques" %}
                     <li><a href="/categories/techniques" class="">기술 ({{category[1].size}})</a></li>
                 {% endif %}

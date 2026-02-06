@@ -3,9 +3,9 @@ title:  "언리얼엔진 탑다운 뷰 예제 분석하기"
 excerpt: "코드의 구조를 분석하자"
 
 categories:
-  - UE5 Insight
+  - Techniques
 tags:
-  - [UE5, 분석, C++]
+  - [UE5, C++]
 
 toc: true
 toc_sticky: true
