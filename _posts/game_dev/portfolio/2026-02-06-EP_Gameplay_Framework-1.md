@@ -17,7 +17,7 @@ last_modified_at: 2025-02-06
 ---
 
 📌 EmploymentProj의 GameplayFramework에 대해 알아보는 포스트  
-🚨 완성된 포스트가 아니므로, 지속적으로 수정됩니다!
+🚨 완성된 포스트가 아니므로, 지속적으로 수정됩니다!  
 [👾 깃허브](https://github.com/SoftHamzzi/UE5-EmploymentProj)  
 [📋 기획](https://github.com/SoftHamzzi/UE5-EmploymentProj/blob/main/DOCS/GAME.md)
 {: .notice--warning}
