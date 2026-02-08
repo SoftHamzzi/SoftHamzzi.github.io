@@ -74,7 +74,8 @@ EnhancedInput->BindAction(
   - 점프를 지속적으로 누르는 경우, 앞으로 한번만 이동해도  
   속도가 줄어들지 않았다.
   - 움직이지 않을때 속도를 감쇠시키도록 하기 위해, `BrakingDecelerationFalling` 변수를 사용하였다.
-  - 또한 `InputAction`의 DeadZone을 조절하여, 일정 속도 이하인 경우 움직이지 않도록 하였다. 
+  - 또한 `InputAction`의 DeadZone을 조절하여, 일정 속도 이하인 경우 움직이지 않도록 하였다.
+
 ```cpp
 UCharacterMovementComponent* Movement = GetCharacterMovement();
 Movement->JumpZVelocity = 420.f;
