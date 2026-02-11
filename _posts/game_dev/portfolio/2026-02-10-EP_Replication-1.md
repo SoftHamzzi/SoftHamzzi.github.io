@@ -126,6 +126,11 @@ void AEPCharacter::Server_SetSprinting_Implementation(bool bNewSprinting)
 ### 호출 관계도
 
 ```mermaid
+---
+config:
+  look: handDrawn
+  theme: dark
+---
 classDiagram
     direction TB
 
@@ -283,17 +288,6 @@ FNetworkPredictionData_Client* UEPCharacterMovement::GetPredictionData_Client() 
 ---
 
 ## 5. FSavedMove_EPCharacter — 이동 입력 저장
-
-<!--
-  SavedMove란 무엇인가:
-  - 클라이언트가 매 프레임 생성하는 이동 '스냅샷'
-  - 서버 보정 시 이 스냅샷들을 리플레이하여 위치 재계산
-  - 커스텀 플래그 없으면 리플레이 시 Sprint 상태 누락 → 걷기 속도로 이동하는 버그
-
-  UCLASS가 아닌 일반 C++ 클래스:
-  - .cpp 내부에 선언 (외부 참조 불필요)
-  - Super 사용 불가 → 부모 클래스명(FSavedMove_Character::) 직접 사용
--->
 
 ### 5-1. 클래스 선언
 
