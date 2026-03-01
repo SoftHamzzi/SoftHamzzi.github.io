@@ -16,7 +16,6 @@ date: 2026-02-27
 last_modified_at: 2025-02-27
 ---
 
-📌 EmploymentProj의 GameplayFramework에 대해 알아보는 포스트  
 🚨 완성된 포스트가 아니므로, 지속적으로 수정됩니다!  
 [👾 깃허브](https://github.com/SoftHamzzi/UE5-EmploymentProj)  
 [📋 기획](https://github.com/SoftHamzzi/UE5-EmploymentProj/blob/main/DOCS/GAME.md)
@@ -323,3 +322,6 @@ Stage 5+ (인벤토리): InventoryComponent 추가
 
 - CombatComponent는 GAS 전환을 위한 과도기 구조다.
 - 발사 진입점을 단일화해두면 나중에 내부를 GA 호출로 교체하는 것만으로 충분하다.
+
+## 7. 다음 편 예고
+→ Replication
