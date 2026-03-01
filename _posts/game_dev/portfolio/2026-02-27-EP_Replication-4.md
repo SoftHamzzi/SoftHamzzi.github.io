@@ -123,6 +123,12 @@ protected:
 ### 3. 서버 권한 사격 흐름
 
 ```mermaid
+---
+config:
+  look: handDrawn
+  theme: dark
+  layout: dagre
+---
 sequenceDiagram
   participant C as 클라이언트
   participant S as 서버
