@@ -68,44 +68,44 @@ last_modified_at: 2025-03-01
 ### 2. Linked Anim Layer 전체 구조
 
 ```
-┌─────────────────────────────────────────────┐
-│ ABP_EPCharacter (메인 AnimBP)               │
-│  Parent C++: UEPAnimInstance                │
-│  Implements: ALI_EPWeapon                   │
-│                                             │
-│  ┌─ Locomotion StateMachine ─────────────┐  │
-│  │  IdleWalkJog ←→ Crouch                │  │
-│  │       ↕ JumpSources / Jump            │  │
-│  └───────────────────────────────────────┘  │
-│                                             │
-│  ┌─ Linked Anim Layer 슬롯 (빈 슬롯) ───┐    │
-│  │  FullBody_IdleWalkRun  ← 빈 슬롯     │   │
-│  │  FullBody_Crouch       ← 빈 슬롯     │   │
-│  │  FullBody_Jump         ← 빈 슬롯     │   │
-│  └──────────────────────────────────────┘   │
-│                                             │
-│  AimOffset: AimPitch / AimYaw               │
+┌───────────────────────┐
+│ ABP_EPCharacter (메인 AnimBP)                │
+│  Parent C++: UEPAnimInstance                 │
+│  Implements: ALI_EPWeapon                    │
+│                                              │
+│ ┌─ Locomotion StateMachine ─────┐    │
+│ │  IdleWalkJog ←→ Crouch             │   │
+│ │       ↕ JumpSources / Jump          │   │
+│ └───────────────────┘   │
+│                                              │
+│ ┌─ Linked Anim Layer 슬롯 (빈 슬롯) ─┐   │
+│ │  FullBody_IdleWalkRun  ← 빈 슬롯    │   │
+│ │  FullBody_Crouch       ← 빈 슬롯    │   │
+│ │  FullBody_Jump         ← 빈 슬롯    │   │
+│ └───────────────────┘   │
+│                                              │
+│  AimOffset: AimPitch / AimYaw                │
 │  AdditiveHitReact 슬롯 (HitReact 몽타주)     │
-└─────────────────────────────────────────────┘
+└───────────────────────┘
               ↑ LinkAnimClassLayers()
-┌─────────────────────────────────────────────┐
-│ ABP_EPWeaponAnimLayersBase                  │
-│  Parent C++: UEPWeaponAnimInstance          │
-│  Implements: ALI_EPWeapon                   │
-│                                             │
+┌───────────────────────┐
+│ ABP_EPWeaponAnimLayersBase                   │
+│  Parent C++: UEPWeaponAnimInstance           │
+│  Implements: ALI_EPWeapon                    │
+│                                              │
 │  각 레이어 함수에 Sequence/BS Player 노드    │
-│  → 임시적으로 각 레이어에 맞는                |
-|    애니메이션 시퀀스 변수 할당                │
-└─────────────────────────────────────────────┘
+│  → 임시적으로 각 레이어에 맞는              │
+│    애니메이션 시퀀스 변수 할당               │
+└───────────────────────┘
               ↑ 상속
-┌─────────────────────────────────────────────┐
-│ ABP_RifleAnimLayers (무기 AnimBP)           │
-│                                             │
+┌───────────────────────┐
+│ ABP_RifleAnimLayers (무기 AnimBP)            │
+│                                              │
 │  AnimGraphOverrides (에셋 오버라이드 에디터) │
 │  FullBody_IdleWalkRun → BS_IdleWalkJog      │
 │  FullBody_Crouch      → Anim_Crouch         │
 │  FullBody_Jump        → Anim_Jump           │
-└─────────────────────────────────────────────┘
+└───────────────────────┘
 ```
 
 **3계층 설계의 핵심:**
