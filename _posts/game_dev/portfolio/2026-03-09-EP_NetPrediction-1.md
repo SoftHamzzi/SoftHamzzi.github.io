@@ -126,4 +126,4 @@ GetMesh()->VisibilityBasedAnimTickOption =
   - 최소한의 본만 설정하거나, CapsuleComponent를 여러개 두는 방식으로 수정한다.
 
 ## 5. 다음 편 예고
-→  서버 사이드 리와인드 컴포넌트 구현
+→  서버 사이드 리와인드
