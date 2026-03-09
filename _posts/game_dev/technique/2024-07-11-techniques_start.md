@@ -24,6 +24,9 @@ last_modified_at: 2024-07-11
 그렇기에 Sebastian Lague의 Unity를 이용한 튜토리얼을 언리얼로 구현하며, 개발 능력과 언리얼 둘 다 잡으려 한다.
 
 첫 번째로 올릴 포스팅은 아래 영상이다.
-<iframe width="560" height="315" src="https://www.youtube.com/embed/-L-WgKMFuhE?si=9u-PT3BWaZxbRYZe" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+[![youtube](http://i.ytimg.com/vi/-L-WgKMFuhE/0.jpg)](https://www.youtube.com/watch?v=-L-WgKMFuhE)
+
+> 위 이미지를 클릭하면, 영상으로 이동합니다.
 
 이 외에도 다른 게임 개발 기술이 있다면 이 카테고리에서 진행하려 한다.
