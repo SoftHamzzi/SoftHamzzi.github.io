@@ -25,7 +25,6 @@ last_modified_at: 2025-03-09
 
 **이 포스팅에서 다루는 것:**
 - 캡슐 콜리전 기반 히트 판정의 구조적 한계
-- Physics Asset으로 본별 히트박스를 구성하는 방법
 - 전용 트레이스 채널과 스냅샷 구조체 설계
 
 **왜 이렇게 구현했는가 (설계 의도):**
@@ -45,6 +44,7 @@ last_modified_at: 2025-03-09
 ![PhysicsAsset.png](https://github.com/user-attachments/assets/6b755951-2d9a-4bc4-a7f6-588d85e17a49)
 - 피직스 에셋 내부의 Primitive
 
+- 단일 캡슐 컴포넌트로는 부위별 피격을 감지할 수 없다.
 - Physics Asset은 각 본에 독립 바디 → `FHitResult.BoneName`에 어느 본을 맞았는지 기록
 
 ### 2. 에디터 설정 — Physics Asset
