@@ -16,6 +16,11 @@
                     <li><a href="/categories/retrospective" class="">회고 ({{category[1].size}})</a></li>
                 {% endif %}
             {% endfor %}
+            {% for category in site.categories %}
+                {% if category[0] == "MallangQuiz" %}
+                    <li><a href="/categories/mallang_quiz" class="">말랑 퀴즈 ({{category[1].size}})</a></li>
+                {% endif %}
+            {% endfor %}
         </ul>
     
       <span class="nav__sub-title">Game Dev</span>
