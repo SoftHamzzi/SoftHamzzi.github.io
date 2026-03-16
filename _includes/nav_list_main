@@ -12,23 +12,8 @@
       <span class="nav__sub-title">Routine</span>
         <ul>
             {% for category in site.categories %}
-                {% if category[0] == "Daily" %}
-                    <li><a href="/categories/daily" class="">일간 회고 ({{category[1].size}})</a></li>
-                {% endif %}
-            {% endfor %}
-            {% for category in site.categories %}
-                {% if category[0] == "Weekly" %}
-                    <li><a href="/categories/weekly" class="">주간 회고 ({{category[1].size}})</a></li>
-                {% endif %}
-            {% endfor %}
-            {% for category in site.categories %}
-                {% if category[0] == "Monthly" %}
-                    <li><a href="/categories/monthly" class="">월간 회고 ({{category[1].size}})</a></li>
-                {% endif %}
-            {% endfor %}
-            {% for category in site.categories %}
-                {% if category[0] == "Yearly" %}
-                    <li><a href="/categories/yearly" class="">연간 회고 ({{category[1].size}})</a></li>
+                {% if category[0] == "Retrospective" %}
+                    <li><a href="/categories/retrospective" class="">회고 ({{category[1].size}})</a></li>
                 {% endif %}
             {% endfor %}
         </ul>
