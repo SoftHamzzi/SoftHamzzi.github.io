@@ -1,19 +1,19 @@
 ---
-title:  "[UE4] GASDocumentation 한글 번역"
+title:  "[UE5] GASDocumentation 한글 번역"
 excerpt: "GASDocumentation"
 
 categories:
   - Techniques
 tags:
-  - [UE4, GAS]
+  - [UE5, GAS]
 
 toc: true
 toc_sticky: true
 
 mermaid: true
  
-date: 2026-03-09
-last_modified_at: 2025-03-09
+date: 2026-03-30
+last_modified_at: 2026-03-30
 ---
 
 🚨 이 문서는 **tranek**님의 **GASDocumentation**을 번역한 것이며,  
