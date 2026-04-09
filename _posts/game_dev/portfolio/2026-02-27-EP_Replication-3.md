@@ -285,4 +285,4 @@ DT_Items["Weapon_AK74"] (DataTable)
 
 ## 참고
 
-{% linkpreview "https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coder-05-manage-item-and-data-in-an-unreal-engine-game" %}
+<https://dev.epicgames.com/documentation/ko-kr/unreal-engine/coder-05-manage-item-and-data-in-an-unreal-engine-game>
