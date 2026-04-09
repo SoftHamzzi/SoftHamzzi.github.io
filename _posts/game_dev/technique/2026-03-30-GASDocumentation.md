@@ -1426,6 +1426,7 @@ FScalableFloat Cost;
 `Cooldown GE` 재사용을 위한 두 가지 기술:
 
 1.  **[`SetByCaller`](#concepts-ge-spec-setbycaller) 사용.** 이것이 가장 쉬운 방법입니다. 공유 `Cooldown GE`의 지속 시간을 `GameplayTag`와 함께 `SetByCaller`로 설정합니다. `GameplayAbility` 서브클래스에서 지속 시간 (`FScalableFloat`)에 대한 float, 고유한 `Cooldown Tag`에 대한 `FGameplayTagContainer`, 그리고 `Cooldown Tag`와 `Cooldown GE`의 태그의 합집합을 반환 포인터로 사용할 임시 `FGameplayTagContainer`를 정의합니다.
+
 ```c++
 UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Cooldown")
 FScalableFloat CooldownDuration;
@@ -1440,6 +1441,7 @@ FGameplayTagContainer TempCooldownTags;
 ```
 
 그런 다음 `UGameplayAbility::GetCooldownTags()`를 오버라이드하여 `Cooldown Tags`와 기존 `Cooldown GE` 태그의 합집합을 반환하도록 합니다.
+
 ```c++
 const FGameplayTagContainer * UPGGameplayAbility::GetCooldownTags() const
 {
@@ -1456,6 +1458,7 @@ const FGameplayTagContainer * UPGGameplayAbility::GetCooldownTags() const
 ```
 
 마지막으로, `UGameplayAbility::ApplyCooldown()`를 오버라이드하여 `Cooldown Tags`를 삽입하고 `SetByCaller`를 쿨다운 `GameplayEffectSpec`에 추가합니다.
+
 ```c++
 void UPGGameplayAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo * ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
 {
@@ -1475,6 +1478,7 @@ void UPGGameplayAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle, 
 ![Cooldown GE with SetByCaller](https://github.com/tranek/GASDocumentation/raw/master/Images/cooldownsbc.png)
 
 2.  **[`MMC`](#concepts-ge-mmc) 사용.** 위와 동일한 설정이지만, `Cooldown GE`의 지속 시간을 `SetByCaller`로 설정하고 `ApplyCooldown`에서도 그렇게 하는 대신, 지속 시간을 `Custom Calculation Class`로 설정하고 새로 만들 `MMC`를 가리키게 합니다.
+
 ```c++
 UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Cooldown")
 FScalableFloat CooldownDuration;
@@ -1489,6 +1493,7 @@ FGameplayTagContainer TempCooldownTags;
 ```
 
 그런 다음 `UGameplayAbility::GetCooldownTags()`를 오버라이드하여 `Cooldown Tags`와 기존 `Cooldown GE` 태그의 합집합을 반환하도록 합니다.
+
 ```c++
 const FGameplayTagContainer * UPGGameplayAbility::GetCooldownTags() const
 {
@@ -1505,6 +1510,7 @@ const FGameplayTagContainer * UPGGameplayAbility::GetCooldownTags() const
 ```
 
 마지막으로, `UGameplayAbility::ApplyCooldown()`를 오버라이드하여 `Cooldown Tags`를 쿨다운 `GameplayEffectSpec`에 주입합니다.
+
 ```c++
 void UPGGameplayAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo * ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
 {
