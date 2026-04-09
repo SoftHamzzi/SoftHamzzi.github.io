@@ -430,7 +430,7 @@ public:
 
 ### 7-1. FObjectInitializer란
 
-{% linkpreview "https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Runtime/CoreUObject/UObject/FObjectInitializer?application_version=5.0" %}
+<https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Runtime/CoreUObject/UObject/FObjectInitializer?application_version=5.0>
 
 - UE5의 서브오브젝트 생성 커스터마이즈 메커니즘
 - 실제 C++ 생성자가 호출된 후 UObject 생성(속성 초기화)을 최종 확정하는 내부 클래스
