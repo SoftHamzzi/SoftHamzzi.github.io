@@ -22,7 +22,7 @@ published                : true
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "햄랑"
 description              : "블로그 개발중입니다."
-url                      "https://softhamzzi.github.io"
+url                      : "https://softhamzzi.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "softhamzzi/comments" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
