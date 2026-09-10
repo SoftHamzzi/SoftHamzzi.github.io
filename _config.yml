@@ -109,11 +109,11 @@ author:
   avatar           : "https://avatars.githubusercontent.com/u/67397908?v=4"
   bio              : "공부했던 것들을 남기는 곳입니다:)"
   location         : "부산"
-  email            : "wnsgnswls1@naver.com"
+  email            : "wnsgnswls1@gmail.com"
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
-      # url: "mailto:wnsgnswls1@naver.com"
+      url: "mailto:wnsgnswls1@gmail.com"
     - label: "Website"
       icon: "fas fa-fw fa-link"
       # url: "https://your-website.com"
