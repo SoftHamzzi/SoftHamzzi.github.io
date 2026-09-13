@@ -13,7 +13,7 @@ toc_sticky: true
 mermaid: true
 
 date: 2026-03-14
-last_modified_at: 2026-08-04
+last_modified_at: 2026-09-13
 ---
 
 📌 **EmploymentProj 3단계 지연 보상** 두 번째 글입니다.
@@ -196,6 +196,11 @@ void UEPCharacterMovement::OnMovementUpdated(float DeltaSeconds, const FVector& 
 }
 ```
 
+`NetworkMoveType != NewMove`일 때 걸러내는 이유는 단순히 "묶음의 마지막이라서"가 아니다.
+`PendingMove`까지 저장하면 같은 틱에 두 점이 겹쳐 시각이 중복되고,
+`OldMove`(패킷 손실 대비 재전송)까지 저장하면 위치는 과거인데 시각은 지금인 스냅샷이 끼어들어
+`HitboxHistory`가 전제하는 "시간 오름차순"이 깨진다. `NewMove`만 남기는 건 그 전제를 지키기 위한 필터다.
+
 그런데도 **여전히 한 틱만큼 어긋났다.**
 디버그 드로우를 켜면 리와인드된 히트박스가 **항상 진행 방향 뒤쪽**에 그려졌다.
 보이는 것보다 이전 위치를 조준해야 맞았다.
@@ -226,8 +231,8 @@ UE_LOG(LogTemp, Log, TEXT("[SERVER_REWIND_POS] ClientFireTime=%.3f Actor=%s Serv
 
 ```cpp
 // LevelTick.cpp:1545
-BroadcastTickDispatch(DeltaSeconds);      // ← ServerMove RPC 수신·처리
-BroadcastPostTickDispatch();              //   CMC::OnMovementUpdated가 여기서 돈다
+BroadcastTickDispatch(DeltaSeconds);      // ← ServerMove RPC 수신·실행. CMC::OnMovementUpdated까지 여기서 동기로 돈다
+BroadcastPostTickDispatch();
 ...
 // LevelTick.cpp:1577-1581
 UnpausedTimeSeconds += DeltaSeconds;
@@ -365,6 +370,26 @@ PrimaryComponentTick.TickGroup = TG_PostPhysics;
 
 기본값은 `TG_PrePhysics`이다. 본 갱신 **전**에 읽게 된다.
 
+### 이 구조, 지어낸 게 아니다 — CMC 자신이 똑같이 한다
+
+`TG_PostPhysics`에 틱을 걸어두는 것만으로 "본이 확정된 뒤"가 진짜로 보장되는 건 아니다.
+같은 그룹 안에서도 디스패치가 먼저이고 완료 대기가 나중이라, 프리리퀴짓을 명시로 걸어야 순서가 문법으로 고정된다.
+
+그런데 이걸 UE 자신의 `UCharacterMovementComponent`가 이미 하고 있다.
+
+```cpp
+// CharacterMovementComponent.cpp:651 — 전용 PostPhysics 틱을 따로 둔다
+PostPhysicsTickFunction.TickGroup = TG_PostPhysics;
+
+// :11770 — 자기 PrePhysics 틱을 프리리퀴짓으로 명시
+PostPhysicsTickFunction.AddPrerequisite(this, this->PrimaryComponentTick);
+```
+
+CMC는 캐릭터가 딛고 선 발판이 물리 시뮬레이션 대상이면, 그 발판의 최종 위치가
+물리 계산이 끝나야 나오므로 반영을 `PostPhysics`까지 미룬다(`bDeferUpdateBasedMovement`).
+**"의존하는 값이 아직 안 끝났으니 프리리퀴짓으로 순서를 강제하고 늦게 처리한다"**는 논리가
+SSR이 본을 나중에 읽는 것과 정확히 같다. SSR도 같은 이유로 `AddTickPrerequisiteComponent(Mesh)`를 걸어야 한다.
+
 ---
 
 ## 결과
@@ -421,8 +446,12 @@ void UEPServerSideRewindComponent::BeginPlay()
 *필요한 개수 = 리와인드 창 ÷ 이동 전송 주기*가 된다.
 고정 타이머 방식이었다면 두 값이 무관해서 이 계산 자체가 성립하지 않는다.
 
-`+ 4`는 여유분이다. 패킷이 몰려 오면 한 틱에 여러 Move가 처리될 수 있고,
-경계에서 보간할 두 점이 항상 남아 있어야 한다.
+`+ 4`는 여유분이다. 경계에서 보간할 두 점이 항상 남아 있어야 하기 때문이다.
+
+pending 스냅샷은 불리언 하나로 관리된다. 한 틱에 `Move`가 여러 번 처리되면
+뒤엣것이 앞엣것을 덮어써서 스냅샷 하나로 합쳐진다. 같은 개수로 더 긴 시간을 덮는 셈이라
+위 계산을 깨지는 않지만, 합쳐지는 순간의 중간 위치는 버려지고 그 구간은 선형 보간으로 메워진다.
+서버 틱레이트가 클라이언트 전송 주기보다 낮을수록 이 손실이 커진다.
 
 ```ini
 ; DefaultGame.ini: Project Settings UI에는 노출되지 않는다
@@ -431,6 +460,8 @@ ClientNetSendMoveDeltaTime = 0.0166
 ```
 
 **ini를 바꾸면 버퍼 크기가 자동으로 따라온다.** 상수를 두 곳에 적지 않다.
+실제 전송 간격은 이 값보다 짧아지지 않는다. 인원이 많거나 네트워크 속도가 낮으면 오히려 늘어나기만 한다.
+그래서 이 식으로 구한 개수는 필요한 최댓값이고, 히스토리가 모자라는 방향으로는 절대 틀리지 않는다.
 
 ---
 
@@ -476,9 +507,11 @@ FEPHitboxSnapshot UEPServerSideRewindComponent::GetSnapshotAtTime(float TargetTi
 ```
 
 **`FTransform::BlendWith`를 쓴 이유:**
-`FMath::Lerp(FRotator, FRotator)`는 각도 랩어라운드를 처리하지 못한다.
--179°에서 181°로 가는 걸 **360도 반대로 돌아가는 것**으로 계산한다.
-`BlendWith`는 내부적으로 쿼터니언 Slerp이라 최단 경로로 돈다.
+오일러 각(`FRotator`)을 축별로 따로 보간하면 3D 상에서 최단 회전호가 안 나온다.
+축이 정렬되는 구간에서 눈에 띄게 튄다. 게다가 본은 원래 쿼터니언(`FTransform::Rotation`)으로 저장돼 있어서
+`FRotator`로 왕복 변환하는 건 비용과 정밀도 손실만 남긴다.
+`BlendWith`는 내부적으로 `FQuat::FastLerp`(nlerp)를 쓰고, 두 쿼터니언의 내적 부호를 보정해 최단 경로를 보장한다.
+등속으로 돌지 않는다는 차이는 있지만, 스냅샷 간격 16ms에서는 체감이 안 된다.
 
 **히스토리를 링버퍼가 아니라 단순 배열로 둔 이유:**
 이 탐색이 "시간 오름차순"을 전제한다. 링버퍼는 인덱스가 감기면서
@@ -526,8 +559,16 @@ FBodyInstance* Body = Mesh->GetBodyInstance(BoneName);
 Body->SetBodyTransform(SnapshotTransform, ETeleportType::TeleportPhysics);
 ```
 
-`ETeleportType::TeleportPhysics`: 순간이동으로 처리해서 속도를 만들어내지 않는다.
-그냥 옮기면 물리 엔진이 "엄청난 속도로 이동했다"고 해석한다.
+엔진도 매 프레임 같은 일을 반대 방향으로 한다. `UpdateKinematicBonesToAnim`이
+월드 본 트랜스폼을 물리 바디로 그대로 밀어넣는다. SSR은 이 정규 경로를 되짚어 되돌리는 셈이다.
+
+`ETeleportType::TeleportPhysics`가 필요한 진짜 이유는 속도가 아니다.
+`Teleport == None`이면 물리 엔진은 `SetKinematicTarget`만 걸어두고, 실제 포즈는 **다음 물리 스텝**에야 반영된다.
+같은 프레임에 쏘는 트레이스는 되돌리기 전 위치를 그대로 본다. 리와인드가 통째로 무시되는 것이다.
+
+`TeleportPhysics`는 `SetGlobalPose`를 거쳐 그 자리에서 가속 구조까지 갱신한다.
+그래서 같은 프레임의 라인트레이스가 되돌린 위치를 즉시 본다.
+"엄청난 속도로 이동했다고 해석되는 걸 막는다"는 부차적인 효과일 뿐이다.
 
 ### 후보가 아닌 캐릭터는 걸러야 한다
 
@@ -556,9 +597,9 @@ if (ServerNow - ClientFireTime > CombatSettings->MaxRewindSeconds)
 }
 ```
 
-**너무 과거인 경우만 막는다.** 0.5초 창 안이라면 클라이언트 값을 그대로 쓴다.
+**너무 과거인 경우만 막는다.** 0.7초 창 안이라면 클라이언트 값을 그대로 쓴다.
 
-조작된 클라이언트는 **최근 0.5초 중 가장 유리한 순간**을 골라 보낼 수 있다.
+조작된 클라이언트는 **최근 0.7초 중 가장 유리한 순간**을 골라 보낼 수 있다.
 적이 엄폐물 뒤로 들어가기 직전 시각을 지정하면, 서버가 되돌려서 맞혀준다.
 
 정석은 **클라이언트 값 대신 서버가 잰 왕복 시간을 쓰는 것**이다.
@@ -567,6 +608,12 @@ if (ServerNow - ClientFireTime > CombatSettings->MaxRewindSeconds)
 const float RTTHalf    = Shooter->GetPlayerState()->GetPingInMilliseconds() * 0.001f * 0.5f;
 const float RewindTime = ServerNow - FMath::Clamp(RTTHalf, 0.f, MaxRewindSeconds);
 ```
+
+실제로 이 경로는 GAS로 넘어가면서 끊어졌다. `GA_Item_PrimaryUse`의 서버 브랜치는 `ClientTime`을
+클라이언트가 보낸 값이 아니라 **서버 자신의 시계로 다시 채운다**. 그 결과 `ServerNow - ClientFireTime`이
+항상 0에 가까워지고, 되돌리는 양이 한 프레임 이하로 줄어든다. 지연 보상이 이름만 남고 사실상 꺼져 있는 셈이다.
+정석대로 RTT 기반으로 옮기면 이 회귀도 같이 고쳐진다. 끊긴 경로를 되살리는 대신, 애초에 옳았던 방식으로
+한 번에 가는 편이 낫다.
 
 혹은 클라이언트 값을 받되 RTT 기대치에서 벗어나면 기각한다.
 
@@ -611,7 +658,7 @@ Broad Phase는 `Location` 하나만 필요한데 본을 전부 보간한다.
 | 맞는 사람 | 안 맞음 | **엄폐물 뒤에서 죽음** |
 
 SSR은 불공정을 없애지 않는다. **쏘는 쪽에서 맞는 쪽으로 옮긴다.**
-그러니 `MaxRewindSeconds = 0.5`는 기술 상수가 아니라 **게임 디자인 결정**이다.
+그러니 `MaxRewindSeconds = 0.7`는 기술 상수가 아니라 **게임 디자인 결정**이다.
 
 - 크게 잡으면 → 고핑 플레이어가 유리해지고, "엄폐 뒤에서 죽었다"가 늘어남
 - 작게 잡으면 → 고핑 플레이어는 계속 빗나감
@@ -620,8 +667,8 @@ SSR은 불공정을 없애지 않는다. **쏘는 쪽에서 맞는 쪽으로 옮
 CS 계열이 창을 넉넉히 잡는 것, 전부 이 저울의 어디에 설 것인가이다.
 
 이 프로젝트는 **추출 슈터**이다. 한 번의 죽음으로 가져온 장비를 전부 잃는다.
-*"쏜 사람의 답답함"보다 **"맞은 사람의 억울함"**이 훨씬 비싼다.*
-그래서 0.5초는 상한이고, 실제로는 대부분 훨씬 짧은 구간만 되돌린다.
+*"쏜 사람의 답답함"보다 **"맞은 사람의 억울함"**이 훨씬 비싸다.*
+그래서 0.7초는 상한이고, 실제로는 대부분 훨씬 짧은 구간만 되돌린다.
 그리고 위 ①의 RTT 기반 검증을 넣으면 이 상한을 더 줄일 수 있다.
 
 ---
