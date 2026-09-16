@@ -16,3 +16,41 @@ search: false
     font-weight: normal;
     font-style: normal;
 }
+
+// GitHub Gist embed - match dark skin
+.gist {
+  .gist-file {
+    background-color: #1d1f21;
+    border-color: #3a3a3a;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .gist-data {
+    background-color: #1d1f21;
+    border-bottom-color: #3a3a3a;
+  }
+
+  .gist-meta {
+    background-color: #16171a;
+    color: #9a9a9a;
+
+    a {
+      color: #6cb6ff;
+    }
+  }
+
+  .blob-wrapper {
+    background-color: #1d1f21;
+  }
+
+  .blob-num {
+    background-color: #1d1f21;
+    border-color: #3a3a3a;
+    color: #6a737d;
+  }
+
+  .blob-code-inner {
+    color: #c9d1d9;
+  }
+}
