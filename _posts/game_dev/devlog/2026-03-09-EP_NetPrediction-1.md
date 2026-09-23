@@ -1,5 +1,5 @@
 ---
-title:  "[UE5] 추출 슈터 3-1. 본 단위 히트박스: 서버는 아무것도 렌더링하지 않는다"
+title:  "[UE5] 익스트랙션 슈터 3-1. 본 단위 히트박스: 서버는 아무것도 렌더링하지 않는다"
 excerpt: "히트박스를 만들기 전에, 서버가 캐릭터의 포즈를 아는지부터 확인해야 했다"
 
 categories:
@@ -16,10 +16,10 @@ date: 2026-03-09
 last_modified_at: 2026-08-04
 ---
 
-📌 **EmploymentProj 3단계 지연 보상** 첫 번째 글입니다.
-[👾 깃허브](https://github.com/SoftHamzzi/UE5-EmploymentProj) ·
-[📚 시리즈 목차](/devlog/EP_Main) ·
-[← 2-6. 애니메이션 시스템](/devlog/EP_Replication-6)
+📌 **EmploymentProj 3단계 지연 보상** 첫 번째 글입니다.  
+[👾 깃허브](https://github.com/SoftHamzzi/UE5-EmploymentProj)  
+[📚 시리즈 목차](/devlog/EP_Main)  
+[← 2-6. 애니메이션, 그리고 남에게 보이는 것](/devlog/EP_Replication-6)
 {: .notice--info}
 
 ## 목표
@@ -56,7 +56,7 @@ Physics Asset은 **본마다 독립적인 콜리전 바디**를 갖는다.
 | `calf_l/r` | Capsule | ×0.7 | |
 | `foot_l/r` | Capsule | ×0.5 | |
 
-손가락·발가락은 뺐다. **바디 수는 곧 트레이스 비용**이고,
+손가락과 발가락은 뺐다. **바디 수는 곧 트레이스 비용**이고,
 손가락에 맞고 안 맞고가 게임을 바꾸지 않는다.
 
 > **배율은 "예정"이다.** 이 글 시점의 대미지 코드는 이게 전부였다.
@@ -73,10 +73,15 @@ Physics Asset은 **본마다 독립적인 콜리전 바디**를 갖는다.
 
 ## 전용 트레이스 채널이 필요한 이유
 
+<details markdown="1">
+<summary>전용 트레이스 채널 선언 (접기/펼치기)</summary>
+
 ```cpp
 // EPTypes.h
 static constexpr ECollisionChannel EP_TraceChannel_Weapon = ECC_GameTraceChannel1;
 ```
+
+</details>
 
 "환경과 격리하려고"라고만 생각하기 쉬운데, **진짜 이유는 따로 있다.**
 
@@ -94,11 +99,11 @@ static constexpr ECollisionChannel EP_TraceChannel_Weapon = ECC_GameTraceChannel
 
 전용 채널이 필요한 이유는 이걸 표현해야 하기 때문이다.
 
-| | `ECC_Pawn` (이동·오버랩) | `EP_TraceChannel_Weapon` |
+| | `ECC_Pawn` (이동, 오버랩) | `EP_TraceChannel_Weapon` |
 |---|---|---|
 | 캡슐 콜리전 | **Block** | **Ignore** |
 | Physics Asset 바디 | Ignore | **Block** |
-| 지형·벽 | Block | Block |
+| 지형, 벽 | Block | Block |
 
 **같은 물체가 용도에 따라 다르게 반응해야 한다**. 그게 채널을 나누는 이유이다.
 "환경 격리"는 부수 효과이다.
@@ -109,25 +114,38 @@ static constexpr ECollisionChannel EP_TraceChannel_Weapon = ECC_GameTraceChannel
 
 여기가 이 글에서 가장 중요한 부분이다.
 
+<details markdown="1">
+<summary>AEPCharacter 생성자에 추가한 옵션 (접기/펼치기)</summary>
+
 ```cpp
 // AEPCharacter 생성자
 GetMesh()->VisibilityBasedAnimTickOption =
     EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 ```
 
+</details>
+
 **이 한 줄이 없으면 위에서 만든 모든 것이 무의미하다.**
 
-### 왜인가
+### 이유
 
 `USkeletalMeshComponent`의 기본값은 원래 `AlwaysTickPoseAndRefreshBones`이다.
 그런데 `ACharacter`가 **일부러 한 단계 낮춘다.**
+
+<details markdown="1">
+<summary>ACharacter가 낮추는 기본값 (접기/펼치기)</summary>
 
 ```cpp
 // Character.cpp:124
 Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
 ```
 
+</details>
+
 두 값의 차이는 주석에 그대로 있다.
+
+<details markdown="1">
+<summary>두 옵션의 엔진 주석 (접기/펼치기)</summary>
 
 ```cpp
 // SkinnedMeshComponent.h:95-98
@@ -137,10 +155,15 @@ AlwaysTickPoseAndRefreshBones,
 AlwaysTickPose,
 ```
 
+</details>
+
 **"렌더링될 때만 본 트랜스폼을 갱신한다."**
 캐릭터는 화면 밖에 있을 때가 많으니 합리적인 최적화이다.
 
 판정 코드를 보면 명확하다.
+
+<details markdown="1">
+<summary>실제 판정 코드 (접기/펼치기)</summary>
 
 ```cpp
 // SkinnedMeshComponent.cpp:1615-1618
@@ -150,6 +173,8 @@ bool USkinnedMeshComponent::ShouldUpdateTransform(bool bLODHasChanged) const
             (VisibilityBasedAnimTickOption == EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones));
 }
 ```
+
+</details>
 
 > **데디케이티드 서버는 아무것도 렌더링하지 않는다.**
 > `bRecentlyRendered`는 **항상 거짓**이다.
@@ -172,11 +197,16 @@ bool USkinnedMeshComponent::ShouldUpdateTransform(bool bLODHasChanged) const
 
 한 가지 예외가 더 있다.
 
+<details markdown="1">
+<summary>몽타주 재생 중 예외 코드 (접기/펼치기)</summary>
+
 ```cpp
 // SkeletalMeshComponent.cpp:1711-1712
 const bool bShouldUpdateTransform = Super::ShouldUpdateTransform(bLODHasChanged) ||
         (GetAnimInstance() && GetAnimInstance()->IsAnyMontagePlaying() ...
 ```
+
+</details>
 
 **몽타주 재생 중에는 갱신된다.**
 피격 몽타주가 도는 동안만 히트박스가 맞고 평소엔 T 포즈,
@@ -200,6 +230,9 @@ const bool bShouldUpdateTransform = Super::ShouldUpdateTransform(bLODHasChanged)
 
 과거를 되짚으려면 과거를 저장해야 한다.
 
+<details markdown="1">
+<summary>스냅샷 구조체 (접기/펼치기)</summary>
+
 ```cpp
 // Public/Types/EPTypes.h
 
@@ -222,6 +255,8 @@ struct FEPHitboxSnapshot
     UPROPERTY() TArray<FEPBoneSnapshot> Bones;             // Narrow Phase 리와인드용
 };
 ```
+
+</details>
 
 ### `Location`을 따로 두는 이유
 
@@ -248,7 +283,7 @@ struct FEPHitboxSnapshot
 | 캐릭터당 `FTransform` | 20 × 17 = **340개** |
 | 8인 매치 | **약 2700개** |
 
-`FTransform`은 회전·위치·스케일을 담아 작지 않다.
+`FTransform`은 회전, 위치, 스케일을 담아 작지 않다.
 **이게 매 틱 갱신되는 서버 메모리**이다.
 
 줄일 여지는 있다.
@@ -256,7 +291,7 @@ struct FEPHitboxSnapshot
 | 방법 | 효과 |
 |---|---|
 | 스케일 제외, 위치+회전만 저장 | 구조체 크기 감소 |
-| 판정 본만 저장 (손·발 제외) | 20 → 12개 |
+| 판정 본만 저장 (손, 발 제외) | 20 → 12개 |
 | 이동이 없으면 스냅샷 생략 | 정지한 캐릭터 비용 0 |
 
 지금 규모에서는 손대지 않았다. **다만 무엇이 비싼지는 알고 간다.**
@@ -270,18 +305,28 @@ Physics Asset의 바디는 두 곳에서 동시에 쓰인다.
 1. 이 글의 **히트 판정**
 2. [2-2편](/devlog/EP_Replication-2)의 **래그돌**
 
+<details markdown="1">
+<summary>사망 시 래그돌 전환 코드 (접기/펼치기)</summary>
+
 ```cpp
 // Multicast_Die
 GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 GetMesh()->SetSimulatePhysics(true);
 ```
 
+</details>
+
 죽는 순간 그 바디들이 **물리 시뮬레이션에 의해** 움직이기 시작한다.
 그리고 다음 편에서 만들 리와인드는 **그 바디를 강제로 과거 위치로 옮긴다.**
+
+<details markdown="1">
+<summary>리와인드가 하는 일 (접기/펼치기)</summary>
 
 ```cpp
 BodyInstance->SetBodyTransform(PastTransform, ETeleportType::TeleportPhysics);
 ```
+
+</details>
 
 **시뮬레이션 중인 바디를 텔레포트시키는 것**이라, 죽은 캐릭터를 리와인드하면
 래그돌이 튈 수 있다. 지금은 사망 즉시 판정 대상에서 빠져 문제가 없다.

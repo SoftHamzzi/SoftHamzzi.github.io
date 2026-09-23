@@ -1,5 +1,5 @@
 ---
-title:  "[UE5] 추출 슈터 3-2. 서버 사이드 리와인드: 두 함수가 다른 프레임의 시계를 보고 있었다"
+title:  "[UE5] 익스트랙션 슈터 3-2. 서버 사이드 리와인드: 두 함수가 다른 프레임의 시계를 보고 있었다"
 excerpt: "오차 242cm를 2.3cm로 줄이기까지, 일주일간의 원인 추적"
 
 categories:
@@ -16,9 +16,9 @@ date: 2026-03-14
 last_modified_at: 2026-09-13
 ---
 
-📌 **EmploymentProj 3단계 지연 보상** 두 번째 글입니다.
-[👾 깃허브](https://github.com/SoftHamzzi/UE5-EmploymentProj) ·
-[📚 시리즈 목차](/devlog/EP_Main) ·
+📌 **EmploymentProj 3단계 지연 보상** 두 번째 글입니다.  
+[👾 깃허브](https://github.com/SoftHamzzi/UE5-EmploymentProj)  
+[📚 시리즈 목차](/devlog/EP_Main)  
 [← 3-1. 본 단위 히트박스](/devlog/EP_NetPrediction-1)
 {: .notice--info}
 
@@ -28,10 +28,15 @@ last_modified_at: 2026-09-13
 
 2단계까지의 사격은 이랬다.
 
+<details markdown="1">
+<summary>2단계까지의 사격 판정 (접기/펼치기)</summary>
+
 ```cpp
 // Server_Fire: 서버가 RPC를 받은 '지금' 위치로 판정
 GetWorld()->LineTraceSingleByChannel(Hit, Origin, End, ...);
 ```
+
+</details>
 
 ```
 [클라] 적이 X=0에 보인다 → 발사
@@ -46,7 +51,7 @@ GetWorld()->LineTraceSingleByChannel(Hit, Origin, End, ...);
 
 ---
 
-## 구조: 왜 별도 컴포넌트인가
+## 별도 컴포넌트로 분리한 이유
 
 ```mermaid
 ---
@@ -71,6 +76,9 @@ classDiagram
   }
 ```
 
+<details markdown="1">
+<summary>생성자 (접기/펼치기)</summary>
+
 ```cpp
 UEPServerSideRewindComponent::UEPServerSideRewindComponent()
 {
@@ -79,6 +87,8 @@ UEPServerSideRewindComponent::UEPServerSideRewindComponent()
     SetIsReplicatedByDefault(false);                   // 히스토리는 서버만 필요. 복제 비용 0
 }
 ```
+
+</details>
 
 `AEPCharacter`나 `UEPCombatComponent`에 넣지 않은 이유:
 
@@ -96,9 +106,12 @@ UEPCombatComponent::HandleHitscanFire
 
 ---
 
-## 무엇을 저장하는가
+## 저장하는 값
 
 [3-1편](/devlog/EP_NetPrediction-1)에서 만든 구조체를 매 이동마다 쌓는다.
+
+<details markdown="1">
+<summary>[3-1편]에서 만든 구조체 (접기/펼치기)</summary>
 
 ```cpp
 struct FEPHitboxSnapshot
@@ -109,6 +122,8 @@ struct FEPHitboxSnapshot
 };
 ```
 
+</details>
+
 **여기서 절대 어겨지면 안 되는 규칙이 하나 있다.**
 
 > `ServerTime`, `Location`, `Bones`: **셋이 같은 순간을 가리켜야 한다.**
@@ -117,9 +132,12 @@ struct FEPHitboxSnapshot
 
 ---
 
-## 처음 구현: 그리고 왜 틀렸는가
+## 처음 구현: 틀린 지점
 
 처음에는 단순한 고정 간격 타이머였다.
+
+<details markdown="1">
+<summary>수정 전: 고정 간격 타이머 (접기/펼치기)</summary>
 
 ```cpp
 // 수정 전
@@ -142,6 +160,8 @@ void UEPServerSideRewindComponent::SaveHitboxSnapshot()
     // 본 트랜스폼...
 }
 ```
+
+</details>
 
 30ms마다 "지금 시각"과 "지금 위치"를 같이 찍는다. 문제없어 보인다.
 
@@ -174,6 +194,9 @@ void UEPServerSideRewindComponent::SaveHitboxSnapshot()
 
 CMC에 델리게이트를 달아서 "이동을 처리한 시각"을 받아왔다.
 
+<details markdown="1">
+<summary>델리게이트 선언과 브로드캐스트 (접기/펼치기)</summary>
+
 ```cpp
 // EPCharacterMovement.h
 DECLARE_MULTICAST_DELEGATE_TwoParams(FEPOnServerMoveProcessed, float /*Time*/, FVector /*Location*/);
@@ -196,6 +219,8 @@ void UEPCharacterMovement::OnMovementUpdated(float DeltaSeconds, const FVector& 
 }
 ```
 
+</details>
+
 `NetworkMoveType != NewMove`일 때 걸러내는 이유는 단순히 "묶음의 마지막이라서"가 아니다.
 `PendingMove`까지 저장하면 같은 틱에 두 점이 겹쳐 시각이 중복되고,
 `OldMove`(패킷 손실 대비 재전송)까지 저장하면 위치는 과거인데 시각은 지금인 스냅샷이 끼어들어
@@ -208,6 +233,9 @@ void UEPCharacterMovement::OnMovementUpdated(float DeltaSeconds, const FVector& 
 ### 계측
 
 이 로그 두 줄로 잡았다.
+
+<details markdown="1">
+<summary>계측용 로그 두 줄 (접기/펼치기)</summary>
 
 ```cpp
 // SaveHitboxSnapshot 안: 델리게이트가 준 시각과 '지금' 시각을 비교
@@ -222,6 +250,8 @@ UE_LOG(LogTemp, Log, TEXT("[SERVER_REWIND_POS] ClientFireTime=%.3f Actor=%s Serv
        ClientFireTime, *GetNameSafe(Target), *ServerPos.ToString(), *RewindPos.ToString());
 ```
 
+</details>
+
 `Diff`가 **항상 정확히 한 프레임 시간**이었다. 상황과 무관하게요.
 *"어떤 상황에서도 정확히 한 틱"*이라면 원인은 게임 로직이 아니라 **틱 구조** 안에 있다.
 
@@ -229,9 +259,12 @@ UE_LOG(LogTemp, Log, TEXT("[SERVER_REWIND_POS] ClientFireTime=%.3f Actor=%s Serv
 
 `UWorld::Tick`을 열었다.
 
+<details markdown="1">
+<summary>UWorld::Tick 순서 (접기/펼치기)</summary>
+
 ```cpp
 // LevelTick.cpp:1545
-BroadcastTickDispatch(DeltaSeconds);      // ← ServerMove RPC 수신·실행. CMC::OnMovementUpdated까지 여기서 동기로 돈다
+BroadcastTickDispatch(DeltaSeconds);      // ← ServerMove RPC 수신, 실행. CMC::OnMovementUpdated까지 여기서 동기로 돈다
 BroadcastPostTickDispatch();
 ...
 // LevelTick.cpp:1577-1581
@@ -248,7 +281,12 @@ RunTickGroup(TG_PrePhysics);
 RunTickGroup(TG_PostPhysics);             // ← SSR::TickComponent가 여기서 돈다
 ```
 
+</details>
+
 그리고 서버 시계의 정체:
+
+<details markdown="1">
+<summary>GetServerWorldTimeSeconds 구현 (접기/펼치기)</summary>
 
 ```cpp
 // GameStateBase.cpp:144-149
@@ -258,6 +296,8 @@ double AGameStateBase::GetServerWorldTimeSeconds() const
     return World->GetTimeSeconds() + ServerWorldTimeSecondsDelta;
 }
 ```
+
+</details>
 
 **`TimeSeconds`를 그대로 쓴다.**
 
@@ -278,6 +318,9 @@ double AGameStateBase::GetServerWorldTimeSeconds() const
 ---
 
 ## 해결: 세 값을 한 순간에 묶는다
+
+<details markdown="1">
+<summary>수정 후: pending을 거쳐 PostPhysics에서 커밋 (접기/펼치기)</summary>
 
 ```cpp
 // TickDispatch 시점: 본 Transform은 아직 갱신 전. 값만 보관한다.
@@ -322,6 +365,8 @@ void UEPServerSideRewindComponent::SaveHitboxSnapshot(float Time, const FVector&
 }
 ```
 
+</details>
+
 ```mermaid
 ---
 config:
@@ -360,30 +405,40 @@ F --> G
 같은 버그가 그대로 남는다.
 
 **본 Transform만 PostPhysics에서 읽는다.** 그건 시각의 문제가 아니라
-"물리·애니메이션 갱신이 끝나야 유효하다"는 순서의 문제이기 때문이다.
+"물리, 애니메이션 갱신이 끝나야 유효하다"는 순서의 문제이기 때문이다.
 
 그리고 이 줄이 없으면 전부 무의미하다.
+
+<details markdown="1">
+<summary>TickGroup 지정 (접기/펼치기)</summary>
 
 ```cpp
 PrimaryComponentTick.TickGroup = TG_PostPhysics;
 ```
 
+</details>
+
 기본값은 `TG_PrePhysics`이다. 본 갱신 **전**에 읽게 된다.
 
-### 이 구조, 지어낸 게 아니다 — CMC 자신이 똑같이 한다
+### 이 구조는 지어낸 게 아니다: CMC도 똑같이 한다
 
 `TG_PostPhysics`에 틱을 걸어두는 것만으로 "본이 확정된 뒤"가 진짜로 보장되는 건 아니다.
 같은 그룹 안에서도 디스패치가 먼저이고 완료 대기가 나중이라, 프리리퀴짓을 명시로 걸어야 순서가 문법으로 고정된다.
 
 그런데 이걸 UE 자신의 `UCharacterMovementComponent`가 이미 하고 있다.
 
+<details markdown="1">
+<summary>CMC의 PostPhysics 틱 설정 (접기/펼치기)</summary>
+
 ```cpp
-// CharacterMovementComponent.cpp:651 — 전용 PostPhysics 틱을 따로 둔다
+// CharacterMovementComponent.cpp:651 (전용 PostPhysics 틱을 따로 둔다)
 PostPhysicsTickFunction.TickGroup = TG_PostPhysics;
 
-// :11770 — 자기 PrePhysics 틱을 프리리퀴짓으로 명시
+// :11770 (자기 PrePhysics 틱을 프리리퀴짓으로 명시)
 PostPhysicsTickFunction.AddPrerequisite(this, this->PrimaryComponentTick);
 ```
+
+</details>
 
 CMC는 캐릭터가 딛고 선 발판이 물리 시뮬레이션 대상이면, 그 발판의 최종 위치가
 물리 계산이 끝나야 나오므로 반영을 `PostPhysics`까지 미룬다(`bDeferUpdateBasedMovement`).
@@ -423,6 +478,9 @@ SSR이 본을 나중에 읽는 것과 정확히 같다. SSR도 같은 이유로 
 
 ## 히스토리 크기
 
+<details markdown="1">
+<summary>히스토리 크기 계산 (접기/펼치기)</summary>
+
 ```cpp
 void UEPServerSideRewindComponent::BeginPlay()
 {
@@ -441,6 +499,8 @@ void UEPServerSideRewindComponent::BeginPlay()
 }
 ```
 
+</details>
+
 **이 식이 성립하는 건 위의 수정 덕분이다.**
 스냅샷이 `ServerMove` 수신마다 정확히 하나씩 쌓이므로,
 *필요한 개수 = 리와인드 창 ÷ 이동 전송 주기*가 된다.
@@ -453,11 +513,16 @@ pending 스냅샷은 불리언 하나로 관리된다. 한 틱에 `Move`가 여�
 위 계산을 깨지는 않지만, 합쳐지는 순간의 중간 위치는 버려지고 그 구간은 선형 보간으로 메워진다.
 서버 틱레이트가 클라이언트 전송 주기보다 낮을수록 이 손실이 커진다.
 
+<details markdown="1">
+<summary>ini 설정 (접기/펼치기)</summary>
+
 ```ini
 ; DefaultGame.ini: Project Settings UI에는 노출되지 않는다
 [/Script/Engine.GameNetworkManager]
 ClientNetSendMoveDeltaTime = 0.0166
 ```
+
+</details>
 
 **ini를 바꾸면 버퍼 크기가 자동으로 따라온다.** 상수를 두 곳에 적지 않다.
 실제 전송 간격은 이 값보다 짧아지지 않는다. 인원이 많거나 네트워크 속도가 낮으면 오히려 늘어나기만 한다.
@@ -466,6 +531,9 @@ ClientNetSendMoveDeltaTime = 0.0166
 ---
 
 ## 보간: 회전은 Lerp하면 안 된다
+
+<details markdown="1">
+<summary>GetSnapshotAtTime (접기/펼치기)</summary>
 
 ```cpp
 FEPHitboxSnapshot UEPServerSideRewindComponent::GetSnapshotAtTime(float TargetTime) const
@@ -505,6 +573,8 @@ FEPHitboxSnapshot UEPServerSideRewindComponent::GetSnapshotAtTime(float TargetTi
     return Result;
 }
 ```
+
+</details>
 
 **`FTransform::BlendWith`를 쓴 이유:**
 오일러 각(`FRotator`)을 축별로 따로 보간하면 3D 상에서 최단 회전호가 안 나온다.
@@ -554,10 +624,15 @@ Game Thread Tick
 `SetBoneTransformByName`은 **스켈레탈 메시의 본 배열**을 건드린다.
 트레이스가 실제로 검사하는 건 **물리 바디**이고, 그건 별개이다.
 
+<details markdown="1">
+<summary>물리 바디를 직접 옮기는 코드 (접기/펼치기)</summary>
+
 ```cpp
 FBodyInstance* Body = Mesh->GetBodyInstance(BoneName);
 Body->SetBodyTransform(SnapshotTransform, ETeleportType::TeleportPhysics);
 ```
+
+</details>
 
 엔진도 매 프레임 같은 일을 반대 방향으로 한다. `UpdateKinematicBonesToAnim`이
 월드 본 트랜스폼을 물리 바디로 그대로 밀어넣는다. SSR은 이 정규 경로를 되짚어 되돌리는 셈이다.
@@ -575,20 +650,28 @@ Body->SetBodyTransform(SnapshotTransform, ETeleportType::TeleportPhysics);
 리와인드된 월드에서 트레이스를 쏘면 **Broad Phase 후보가 아닌 캐릭터**에게도 맞을 수 있다.
 그 캐릭터는 여전히 현재 위치에 있으니, 판정 기준이 섞인다.
 
+<details markdown="1">
+<summary>후보 필터 (접기/펼치기)</summary>
+
 ```cpp
 if (!CandidateSet.Contains(HitChar)) continue;
 ```
 
+</details>
+
 ### 복구는 즉시
 
 Narrow Phase가 끝나면 **같은 프레임 안에서** 원래 트랜스폼으로 되돌린다.
-한 프레임이라도 남으면 그 사이의 다른 트레이스·오버랩이 과거 위치를 보게 된다.
+한 프레임이라도 남으면 그 사이의 다른 트레이스나 오버랩이 과거 위치를 보게 된다.
 
 ---
 
 ## 정직하게: 남아 있는 두 가지
 
 ### ① 클라이언트가 보낸 시각을 그대로 믿는다
+
+<details markdown="1">
+<summary>과거 클램프 (접기/펼치기)</summary>
 
 ```cpp
 if (ServerNow - ClientFireTime > CombatSettings->MaxRewindSeconds)
@@ -597,6 +680,8 @@ if (ServerNow - ClientFireTime > CombatSettings->MaxRewindSeconds)
 }
 ```
 
+</details>
+
 **너무 과거인 경우만 막는다.** 0.7초 창 안이라면 클라이언트 값을 그대로 쓴다.
 
 조작된 클라이언트는 **최근 0.7초 중 가장 유리한 순간**을 골라 보낼 수 있다.
@@ -604,18 +689,22 @@ if (ServerNow - ClientFireTime > CombatSettings->MaxRewindSeconds)
 
 정석은 **클라이언트 값 대신 서버가 잰 왕복 시간을 쓰는 것**이다.
 
+<details markdown="1">
+<summary>RTT 기반 리와인드 시각 (접기/펼치기)</summary>
+
 ```cpp
 const float RTTHalf    = Shooter->GetPlayerState()->GetPingInMilliseconds() * 0.001f * 0.5f;
 const float RewindTime = ServerNow - FMath::Clamp(RTTHalf, 0.f, MaxRewindSeconds);
 ```
 
-실제로 이 경로는 GAS로 넘어가면서 끊어졌다. `GA_Item_PrimaryUse`의 서버 브랜치는 `ClientTime`을
-클라이언트가 보낸 값이 아니라 **서버 자신의 시계로 다시 채운다**. 그 결과 `ServerNow - ClientFireTime`이
-항상 0에 가까워지고, 되돌리는 양이 한 프레임 이하로 줄어든다. 지연 보상이 이름만 남고 사실상 꺼져 있는 셈이다.
-정석대로 RTT 기반으로 옮기면 이 회귀도 같이 고쳐진다. 끊긴 경로를 되살리는 대신, 애초에 옳았던 방식으로
-한 번에 가는 편이 낫다.
+</details>
 
 혹은 클라이언트 값을 받되 RTT 기대치에서 벗어나면 기각한다.
+
+> **이 글 이후 바뀐 것.** 이 경로는 이후 GAS로 옮기면서 끊어졌다. 서버 브랜치가 `ClientTime`을
+> 클라이언트가 보낸 값이 아니라 **서버 자신의 시계로 다시 채우게** 바뀌어서, `ServerNow - ClientFireTime`이
+> 항상 0에 가까워지고 되돌리는 양이 한 프레임 이하로 줄었다. 지연 보상이 이름만 남고 사실상 꺼진 셈이다.
+> 정석대로 RTT 기반으로 옮기면 이 문제도 같이 풀린다.
 
 > 미래 시각(`ClientFireTime > ServerNow`)은 따로 검사하지 않는데,
 > `GetSnapshotAtTime`의 경계 처리가 `HitboxHistory.Last()`를 반환해서
@@ -628,12 +717,17 @@ const float RewindTime = ServerNow - FMath::Clamp(RTTHalf, 0.f, MaxRewindSeconds
 
 ### ② 한 발에 히스토리를 두 번 뒤진다
 
+<details markdown="1">
+<summary>같은 시각을 두 번 조회하는 코드 (접기/펼치기)</summary>
+
 ```cpp
 // Broad Phase 안
 const FEPHitboxSnapshot Snap = TargetSSR->GetSnapshotAtTime(ClientFireTime);   // Location만 쓴다
 // Narrow Phase 안
 const FEPHitboxSnapshot Snap = TargetSSR->GetSnapshotAtTime(ClientFireTime);   // 전체를 쓴다
 ```
+
+</details>
 
 같은 시각으로 두 번 호출하고, `GetSnapshotAtTime`은 매번
 **선형 탐색 + 본 20개 보간 + 배열 할당**을 한다.
@@ -664,9 +758,9 @@ SSR은 불공정을 없애지 않는다. **쏘는 쪽에서 맞는 쪽으로 옮
 - 작게 잡으면 → 고핑 플레이어는 계속 빗나감
 
 발로란트가 창을 짧게 잡고 서버 틱을 128Hz로 올린 것,
-CS 계열이 창을 넉넉히 잡는 것, 전부 이 저울의 어디에 설 것인가이다.
+CS 계열이 창을 넉넉히 잡는 것, 전부 이 저울의 어디에 설지의 문제이다.
 
-이 프로젝트는 **추출 슈터**이다. 한 번의 죽음으로 가져온 장비를 전부 잃는다.
+이 프로젝트는 **익스트랙션 슈터**이다. 한 번의 죽음으로 가져온 장비를 전부 잃는다.
 *"쏜 사람의 답답함"보다 **"맞은 사람의 억울함"**이 훨씬 비싸다.*
 그래서 0.7초는 상한이고, 실제로는 대부분 훨씬 짧은 구간만 되돌린다.
 그리고 위 ①의 RTT 기반 검증을 넣으면 이 상한을 더 줄일 수 있다.
@@ -677,6 +771,9 @@ CS 계열이 창을 넉넉히 잡는 것, 전부 이 저울의 어디에 설 것
 
 원인을 찾는 데 가장 크게 기여한 게 이것이다.
 
+<details markdown="1">
+<summary>디버그 설정 필드 (접기/펼치기)</summary>
+
 ```cpp
 // UEPCombatDeveloperSettings: DefaultGame.ini에 저장
 UPROPERTY(Config, EditAnywhere, Category = "Debug|SSR") bool  bEnableSSRDebugDraw = false;
@@ -684,6 +781,8 @@ UPROPERTY(Config, EditAnywhere, Category = "Debug|SSR") float SSRDebugDrawDurati
 UPROPERTY(Config, EditAnywhere, Category = "Debug|SSR") float SSRDebugLineThickness = 1.5f;
 UPROPERTY(Config, EditAnywhere, Category = "Debug|SSR") bool  bEnableSSRDebugLog  = false;
 ```
+
+</details>
 
 | 색 | 의미 |
 |---|---|
@@ -696,12 +795,17 @@ UPROPERTY(Config, EditAnywhere, Category = "Debug|SSR") bool  bEnableSSRDebugLog
 버그가 있을 때는 빨강이 항상 진행 방향 뒤로 한 칸씩 밀려 있었고,
 고친 뒤에는 클라이언트가 조준했던 그 자리에 정확히 놓인다.
 
+<details markdown="1">
+<summary>Shipping 빌드 가드 (접기/펼치기)</summary>
+
 ```cpp
 #if (UE_BUILD_SHIPPING || UE_BUILD_TEST)
     bDebugDraw = false;
     bDebugLog  = false;
 #endif
 ```
+
+</details>
 
 ---
 
@@ -716,7 +820,7 @@ UPROPERTY(Config, EditAnywhere, Category = "Debug|SSR") bool  bEnableSSRDebugLog
 *"항상 정확히 한 틱"*이라는 관찰이 방향을 바꿨다.
 
 **3. 엔진 소스를 여는 것이 가장 빠른 길일 때가 있다.**
-문서·레딧·스택오버플로를 뒤진 시간보다 `LevelTick.cpp`를 읽은 30분이 결정적이었다.
+문서, 레딧, 스택오버플로를 뒤진 시간보다 `LevelTick.cpp`를 읽은 30분이 결정적이었다.
 
 ---
 

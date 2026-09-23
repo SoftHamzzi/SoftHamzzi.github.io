@@ -1,6 +1,6 @@
 ---
-title:  "[UE5] 추출 슈터 1-1. Gameplay Framework 아키텍처 설계"
-excerpt: "무엇을 서버에만 두고, 무엇을 클라에 올릴 것인가"
+title:  "[UE5] 익스트랙션 슈터 1-1. Gameplay Framework 아키텍처 설계"
+excerpt: "무엇을 서버에만 두고, 무엇을 클라에 올릴지"
 
 categories:
   - DevLog
@@ -13,26 +13,24 @@ toc_sticky: true
 mermaid: true
 
 date: 2026-02-06
-last_modified_at: 2026-08-04
+last_modified_at: 2026-09-23
 ---
 
-📌 **EmploymentProj 1단계 Gameplay Framework**의 첫 글입니다.
-[👾 깃허브](https://github.com/SoftHamzzi/UE5-EmploymentProj) ·
-[📋 기획](https://github.com/SoftHamzzi/UE5-EmploymentProj/blob/main/DOCS/GAME.md) ·
+📌 **EmploymentProj 1단계 Gameplay Framework**의 첫 글입니다.  
+[👾 깃허브](https://github.com/SoftHamzzi/UE5-EmploymentProj)  
+[📋 기획](https://github.com/SoftHamzzi/UE5-EmploymentProj/blob/main/DOCS/GAME.md)  
 [📚 시리즈 목차](/devlog/EP_Main)
 {: .notice--info}
 
 ## 개요
 
-게임플레이의 뼈대를 세우는 글이다.
+게임플레이의 뼈대를 세우는 글이다. 이 단계에서 실제로 결정한 것은 두 가지다.
 
-이 단계에서 실제로 결정한 것은 두 가지이다.
-
-1. **어느 베이스 클래스를 상속할 것인가**: `AGameMode`냐 `AGameModeBase`냐
-2. **어느 값을 클라이언트에게 보여줄 것인가**: 서버 전용으로 둘 것과 `GameState`로 올릴 것
+1. **어느 베이스 클래스를 상속할지**: `AGameMode`냐 `AGameModeBase`냐
+2. **어느 값을 클라이언트에게 보여줄지**: 서버 전용으로 둘 것과 `GameState`로 올릴 것
 
 두 번째가 이 프로젝트의 성격을 결정한다.
-타르코프류 추출 슈터라서 **은폐가 기본값**이고, 공개는 예외이다.
+타르코프류 익스트랙션 슈터라서 **은폐가 기본값**이고, 공개는 예외다.
 
 ---
 
@@ -70,30 +68,30 @@ flowchart BT
 ```
 
 `AGameStateBase`와 `APlayerState`가 둘 다 `AInfo` 계열이라는 게 눈에 띈다.
-`AInfo`는 **월드에 위치를 갖지 않는 액터**이다.
+`AInfo`는 **월드에 위치를 갖지 않는 액터**다.
 "게임 정보를 들고 있지만 공간에 존재하지 않는 것"이라는 성격이 상속 구조에 그대로 드러난다.
 
 | 클래스 | 역할 |
 |---|---|
-| `AEPCharacter` | 플레이어가 조종하는 존재. 위치·애니메이션 |
+| `AEPCharacter` | 플레이어가 조종하는 존재. 위치, 애니메이션 |
 | `AEPGameMode` | **서버에만 존재**. 게임 규칙, 매치 판정, 스폰 규칙 |
 | `AEPGameState` | GameMode의 값 중 **클라가 알아도 되는 것**만 복제 |
 | `AEPPlayerState` | 플레이어별 상태(킬 수, 추출 여부). 나중에 ASC도 여기 |
 | `AEPPlayerController` | 입력, HUD, 서버 요청 송신 |
 
-### PlayerController가 어디에 존재하는지: 나중에 중요해진다
+### PlayerController는 서버에도 전원 분량 있다
 
 | | 서버 | 소유 클라 | 다른 클라 |
 |---|---|---|---|
 | 인스턴스 | **전원 분량 존재** | 자기 것 1개 | 없음 |
-| 하는 일 | `Server_` RPC 수신, 권한 판정, `RestartPlayer` | 입력, HUD, `Server_` 송신 | - |
+| 하는 일 | `Server_` RPC 수신, 권한 판정, `RestartPlayer` | 입력, HUD, `Server_` 송신 | 없음 |
 
 "클라이언트 것"이라고 생각하기 쉽지만 **서버에도 플레이어 수만큼 있다.**
 없으면 `Server_` RPC를 받을 대상이 없으니 당연하다.
 
-이걸 지금 확실히 해두는 이유가 있다. 나중에 [2-6편](/devlog/EP_Replication-6)에서
-크로스헤어 위젯을 만들 때 `IsLocalController()` 검사를 해야 하는데,
-그 이유가 정확히 **서버에도 PlayerController가 있어서 서버에서도 위젯이 생성되기 때문**이다.
+이걸 지금 확실히 해두는 이유가 있다. 서버에도 PlayerController가 있다는 걸 모르고 UI 코드를 짜면,
+그 코드가 서버에서도 똑같이 돌아간다는 걸 놓치기 쉽다. `IsLocalController()` 같은 검사로
+"진짜 화면에 보여줄 클라인지"를 걸러야 하는 이유가 여기서 나온다.
 
 ---
 
@@ -105,33 +103,33 @@ flowchart BT
 |---|---|---|
 | 매치 상태 | **없음** | `MatchState` + 내장 상태머신 |
 | 훅 | `StartPlay` 정도 | `HandleMatchIsWaitingToStart` / `HandleMatchHasStarted` / `HandleMatchHasEnded` |
-| 리스폰·스폰 | 있음 | 있음 |
+| 리스폰, 스폰 | 있음 | 있음 |
 | 딸려오는 전제 | 없음 | `bDelayedStart`, `ReadyToStartMatch()`, 매치메이킹 흐름 |
 
 **고른 이유:** 이 게임은 *대기 → 진행 → 종료*가 명확한 매치 기반이다.
 상태머신을 직접 만들면 결국 엔진이 이미 가진 것을 다시 짜게 된다.
 [1-3편](/devlog/EP_Gameplay_Framework-3)에서 저 훅 세 개를 전부 오버라이드하게 되는데,
-그게 이 선택의 실질적인 회수이다.
+그게 이 선택의 실질적인 회수다.
 
-**대신 포기한 것:** `AGameMode`는 매치메이킹을 전제한 클래스이다.
+**대신 포기한 것:** `AGameMode`는 매치메이킹을 전제한 클래스다.
 `bDelayedStart`, `ReadyToStartMatch()` 같은 것들이 딸려온다.
 싱글플레이나 로비 없는 코옵이었다면 `AGameModeBase`가 더 가볍다.
 
 ---
 
-## 설계 결정 2: 무엇을 `GameState`로 승격할 것인가
+## 설계 결정 2: 무엇을 `GameState`로 승격할지
 
-### 먼저, "복제 경계"라는 표현은 정확하지 않다
+### "복제 경계"라는 표현은 정확하지 않다
 
-`AEPGameMode`의 `AlivePlayerCount`를 클라이언트가 못 보는 건 **내가 결정한 게 아니다.**
+`AEPGameMode`의 `AlivePlayerCount`를 클라이언트가 못 보는 건 내가 결정한 게 아니다.
 `AGameModeBase`는 애초에 클라이언트에 스폰되지 않는다. 복제할 방법 자체가 없다.
 
-진짜 결정은 반대 방향이다.
+실제로 결정하는 건 다른 쪽이다.
 
-> **GameMode가 아는 것 중 무엇을 GameState로 올릴 것인가.**
+> **GameMode에 있는 것 중 무엇을 GameState로 올릴지**
 
 올리지 않으면 자동으로 은폐되고, 올리면 전 클라이언트가 본다.
-그래서 판단 기준은 하나이다. **UI에 그려야 하는가.**
+판단 기준은 하나, UI 표시 여부다.
 
 | 값 | 어디에 | 판단 |
 |---|---|---|
@@ -144,6 +142,8 @@ flowchart BT
 
 `AGameStateBase`가 아니라 **`AGameState`를 상속**하면 이게 딸려온다.
 
+<details markdown="1"><summary>엔진 코드 (접기/펼치기)</summary>
+
 ```cpp
 // Engine/Classes/GameFramework/GameState.h:34
 UPROPERTY(ReplicatedUsing=OnRep_MatchState, BlueprintReadOnly, VisibleInstanceOnly, Category = GameState)
@@ -153,13 +153,19 @@ FName MatchState;
 DOREPLIFETIME( AGameState, MatchState );
 ```
 
+</details>
+
 그럼에도 `EEPMatchPhase MatchPhase`를 따로 뒀다.
+
+<details markdown="1"><summary>프로젝트 코드 (접기/펼치기)</summary>
 
 ```cpp
 // EPGameState.h
 UPROPERTY(ReplicatedUsing = OnRep_MatchPhase, BlueprintReadOnly, Category="Match")
 EEPMatchPhase MatchPhase;
 ```
+
+</details>
 
 | | 엔진 `FName MatchState` | 프로젝트 `EEPMatchPhase` |
 |---|---|---|
@@ -168,8 +174,8 @@ EEPMatchPhase MatchPhase;
 | 상태 수 | 엔진 6종(`EnteringMap`, `WaitingToStart`, `InProgress`, `WaitingPostMatch`, `LeavingMap`, `Aborted`) | **게임에 필요한 3종만** |
 | UI 매핑 | 문자열 비교 | `switch` |
 
-엔진의 6단계는 **엔진의 관심사**이다(레벨 스트리밍, 심리스 트래블).
-게임 UI가 알아야 할 건 *대기 중이냐 / 하는 중이냐 / 끝났냐* 셋뿐이다.
+엔진의 6단계는 **엔진의 관심사**다(레벨 스트리밍, 심리스 트래블).
+게임 UI가 알아야 할 건 대기 중이냐, 하는 중이냐, 끝났냐 셋뿐이다.
 그래서 엔진 상태머신은 그대로 쓰되, **클라에 내보내는 표현만 좁혔다.**
 
 전환 자체는 엔진 상태머신이 하고, 우리는 훅에서 열거형을 갱신만 한다.
@@ -192,8 +198,8 @@ EEPMatchPhase MatchPhase;
 
 ### 결정 B: 생존자 수를 승격하지 않는다
 
-배틀로얄은 남은 인원을 크게 띄운다. 추출 슈터는 반대이다.
-*맵에 누가 남았는지 모르는 것* 자체가 긴장의 원천이다.
+배틀로얄은 남은 인원을 크게 띄운다. 익스트랙션 슈터는 반대다.
+맵에 누가 남았는지 모르면, 그것만으로 긴장감이 생긴다.
 
 그래서 `AlivePlayerCount`는 `AEPGameMode`에만 둔다.
 서버 전용 클래스에 두는 것만으로 은폐가 성립하므로, 별도 방어 코드가 필요 없다.
@@ -202,7 +208,9 @@ EEPMatchPhase MatchPhase;
 
 ## 폴더 구조
 
-`Public/` / `Private/` 를 나누고, 그 아래를 **기능별**로 갈랐다.
+`Public/` / `Private/`를 나누고, 그 아래를 **기능별**로 갈랐다.
+
+<details markdown="1"><summary>디렉터리 구조 (접기/펼치기)</summary>
 
 ```
 Source/EmploymentProj/
@@ -215,15 +223,18 @@ Source/EmploymentProj/
 └── Private/        # Public 구조를 그대로 미러링
 ```
 
-지금은 단일 모듈이라 `Public`/`Private` 분리의 실익이 크지 않다.
-그럼에도 나눈 이유는 **나중에 모듈을 쪼갤 때 헤더 노출 범위를 다시 정리하는 비용**이 크기 때문이다.
-지금 지키면 공짜고, 나중에 하면 전수 조사가 된다.
+</details>
+
+지금은 모듈이 하나뿐이라 `Public`/`Private`를 굳이 안 나눠도 당장 문제는 없다.
+그래도 미리 나눠두는 이유는, 나중에 모듈을 여러 개로 쪼갤 때 있다.
+그때 가서 나누려면 어떤 헤더를 밖에 공개해도 되는지 파일을 하나하나 다시 뒤져야 한다.
+지금 미리 나눠두면 그 수고를 안 해도 된다.
 
 ---
 
 ## 코드
 
-### `EPTypes.h`: 공용 열거형
+<details markdown="1"><summary>EPTypes.h: 공용 열거형 (접기/펼치기)</summary>
 
 ```cpp
 UENUM(BlueprintType)
@@ -238,7 +249,9 @@ enum class EEPFireMode : uint8 { Single, Burst, Auto };
 
 전부 `uint8` 기반이다. 복제되는 열거형은 밑바탕 타입이 곧 대역폭이다.
 
-### 소유 클라이언트에게만 복제
+</details>
+
+<details markdown="1"><summary>소유 클라이언트에게만 복제 (접기/펼치기)</summary>
 
 ```cpp
 // EPPlayerState.cpp
@@ -252,7 +265,9 @@ void AEPPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 }
 ```
 
-### GameMode → GameState 승격
+</details>
+
+<details markdown="1"><summary>GameMode → GameState 승격 (접기/펼치기)</summary>
 
 ```cpp
 // AEPGameMode::HandleMatchHasStarted()
@@ -260,16 +275,19 @@ void AEPPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 EPGameState->SetMatchPhase(EEPMatchPhase::Playing);
 ```
 
+</details>
+
 ---
 
-## 이 뼈대 위에 다음 편들이 얹는 것
+## 관련 편
 
-| 편 | 이 글의 무엇 위에 |
+이번 1단계에서 이 구조를 이어서 쓸 계획인 글들이다.
+
+| 편 | 이 글과의 연결 |
 |---|---|
 | [1-2](/devlog/EP_Gameplay_Framework-2) 입력 | `AEPPlayerController`가 InputAction을 소유, `AEPCharacter`가 바인딩 |
 | [1-3](/devlog/EP_Gameplay_Framework-3) 매치 흐름 | `AGameMode` 훅 3개 오버라이드 → `EEPMatchPhase` 갱신 |
 | [1-4](/devlog/EP_Gameplay_Framework-4) 스폰 | `AEPGameMode::ChoosePlayerStart` 오버라이드 |
-| [2-5](/devlog/EP_Replication-5) 복제 설계 | 여기서 정한 "은폐가 기본" 원칙을 `COND_*` 선택으로 확장 |
 
 ---
 

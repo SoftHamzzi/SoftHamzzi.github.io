@@ -1,5 +1,5 @@
 ---
-title:  "[UE5] 추출 슈터 3-3. 예측 이펙트, 그리고 죽어 있던 코드 한 줄"
+title:  "[UE5] 익스트랙션 슈터 3-3. 예측 이펙트, 그리고 죽어 있던 코드 한 줄"
 excerpt: "체감은 클라가, 판정은 서버가: 3단계 마무리"
 
 categories:
@@ -16,15 +16,18 @@ date: 2026-03-14
 last_modified_at: 2026-08-04
 ---
 
-📌 **EmploymentProj 3단계 지연 보상** 마지막 글입니다.
-[👾 깃허브](https://github.com/SoftHamzzi/UE5-EmploymentProj) ·
-[📚 시리즈 목차](/devlog/EP_Main) ·
+📌 **EmploymentProj 3단계 지연 보상** 마지막 글입니다.  
+[👾 깃허브](https://github.com/SoftHamzzi/UE5-EmploymentProj)  
+[📚 시리즈 목차](/devlog/EP_Main)  
 [← 3-2. 서버 사이드 리와인드](/devlog/EP_NetPrediction-2)
 {: .notice--info}
 
 ## 판정을 연결한다
 
 [3-2편](/devlog/EP_NetPrediction-2)에서 만든 SSR을 사격 경로에 붙인다.
+
+<details markdown="1">
+<summary>HandleHitscanFire (접기/펼치기)</summary>
 
 ```cpp
 void UEPCombatComponent::HandleHitscanFire(
@@ -59,6 +62,8 @@ void UEPCombatComponent::HandleHitscanFire(
 }
 ```
 
+</details>
+
 **블록을 둘로 나눈 게 요점이다.**
 *"어디를 맞았는가"*(SSR)와 *"얼마나 아픈가"*(대미지)는 다른 문제이다.
 4단계 GAS로 가면 `ApplyPointDamage` 자리가 `GameplayEffectSpec`으로 바뀌는데,
@@ -76,6 +81,9 @@ void UEPCombatComponent::HandleHitscanFire(
 
 **① 본 이름 기반**
 
+<details markdown="1">
+<summary>본 이름 기반 배율 (접기/펼치기)</summary>
+
 ```cpp
 float UEPCombatComponent::GetBoneMultiplier(const FName& BoneName) const
 {
@@ -88,7 +96,12 @@ float UEPCombatComponent::GetBoneMultiplier(const FName& BoneName) const
 }
 ```
 
+</details>
+
 **② PhysicalMaterial 기반**
+
+<details markdown="1">
+<summary>PhysicalMaterial 기반 배율 (접기/펼치기)</summary>
 
 ```cpp
 UCLASS()
@@ -104,9 +117,14 @@ public:
 };
 ```
 
+</details>
+
 ![Set_PM.png](https://github.com/user-attachments/assets/00bd6fc0-2e22-40bd-b7f8-78c319a0c2f9)
 
 Physics Asset에서 `head` 프리미티브를 고르고 Physical Material 슬롯에 약점 PM을 할당한다.
+
+<details markdown="1">
+<summary>트레이스 옵션 (접기/펼치기)</summary>
 
 ```cpp
 // 트레이스에서 반드시 켜야 한다
@@ -114,21 +132,27 @@ FCollisionQueryParams Params;
 Params.bReturnPhysicalMaterial = true;    // 안 켜면 Hit.PhysMaterial이 항상 무효
 ```
 
+</details>
+
 ### 죽어 있던 쪽
 
 원래 이 글에는 *"`BoneDamageMultiplierMap`은 DA_AK74 에셋에서 에디터로 설정"*이라고 썼다.
 **불가능한 이야기였다.**
 
+<details markdown="1">
+<summary>UPROPERTY가 없는 선언 (접기/펼치기)</summary>
+
 ```cpp
 // EPWeaponDefinition.h:43-44
-// 부위별 대미지(GAS 이후 태그 기반으로 수정)
 TMap<FName, float> BoneDamageMultiplierMap;      // ← UPROPERTY가 없다
 ```
+
+</details>
 
 `UPROPERTY`가 없으면:
 
 - **에디터 디테일 패널에 나타나지 않는다** → 값을 넣을 방법이 없음
-- **직렬화되지 않는다** → 저장·로드해도 항상 빈 맵
+- **직렬화되지 않는다** → 저장, 로드해도 항상 빈 맵
 
 그리고 저장소 전체를 뒤져도 **이 맵을 채우는 코드가 없다.**
 선언 한 줄과 `Find` 한 줄이 전부이다.
@@ -137,19 +161,29 @@ TMap<FName, float> BoneDamageMultiplierMap;      // ← UPROPERTY가 없다
 
 더 뼈아픈 건, **내 구현 문서에 이미 적혀 있었다**는 것이다.
 
+<details markdown="1">
+<summary>구현 문서 인용 (접기/펼치기)</summary>
+
 ```
 DOCS/Notes/03_BoneHitbox_Implementation.md:1093
 > BoneDamageMultiplierMap은 UPROPERTY가 없으므로 에디터 노출 없이
 > C++ 또는 DataAsset 로직으로 채운다.
 ```
 
+</details>
+
 "채운다"라고 써놓고 채우지 않았다.
 같은 문서의 문제 해결 표에는 이런 줄까지 있다.
+
+<details markdown="1">
+<summary>구현 문서의 문제 해결 표 (접기/펼치기)</summary>
 
 ```
 | 데미지가 항상 BaseDamage 그대로 | GetBoneMultiplier가 1.0만 반환 |
   BoneDamageMultiplierMap 채워져 있는지 확인 |
 ```
+
+</details>
 
 **증상까지 예상해뒀는데 확인을 안 했다.**
 
@@ -175,10 +209,15 @@ DOCS/Notes/03_BoneHitbox_Implementation.md:1093
 
 그리고 로그는 **범인을 계속 가리키고 있었다.**
 
+<details markdown="1">
+<summary>배율 로그 (접기/펼치기)</summary>
+
 ```cpp
 UE_LOG(LogTemp, Log,
     TEXT("[BoneHitbox] Bone=%s PM=%s Base=%.1f Bone*=%.2f Mat*=%.2f Final=%.1f"), ...);
 ```
+
+</details>
 
 `Bone*=1.00`이 매번 찍혔을 거다.
 **각 배율을 따로 찍도록 로그를 만들어놓고 읽지 않았다.**
@@ -203,8 +242,9 @@ UE_LOG(LogTemp, Log,
 
 **결국 PhysicalMaterial 쪽으로 통일했다.**
 현재 코드에 `BoneDamageMultiplierMap`은 **아예 없다.**
-GAS 이후에는 PhysicalMaterial이 `GameplayTagContainer`를 들고,
-`Zone.Weakspot` 같은 태그로 대미지 실행이 분기한다.
+
+> **이 글 이후 바뀐 것.** GAS로 넘어간 뒤 PhysicalMaterial이 `GameplayTagContainer`를 들고,
+> 태그로 대미지 실행이 분기하는 방식으로 한 번 더 바뀌었다.
 
 **죽어 있던 쪽을 지우고 살아 있던 쪽으로 모은 것**이 이 이야기의 결말이고,
 살아남은 쪽이 원래 가려던 방향이었다.
@@ -224,6 +264,9 @@ GAS 이후에는 PhysicalMaterial이 `GameplayTagContainer`를 들고,
 판정은 3-2편에서 정확해졌는데, **손맛은 여전히 느렸다.**
 
 ### 해결
+
+<details markdown="1">
+<summary>RequestFire (접기/펼치기)</summary>
 
 ```cpp
 void UEPCombatComponent::RequestFire(const FVector& Origin, const FVector& Direction, float ClientFireTime)
@@ -263,6 +306,8 @@ void UEPCombatComponent::Multicast_PlayMuzzleEffect_Implementation(const FVector
 }
 ```
 
+</details>
+
 핵심은 **재생 함수를 분리한 것**이다.
 `PlayLocalMuzzleEffect()`를 만들어두면 로컬 예측과 Multicast가 **같은 코드**를 쓴다.
 쏜 사람과 보는 사람이 다른 이펙트를 보는 일이 없다.
@@ -282,6 +327,9 @@ void UEPCombatComponent::Multicast_PlayMuzzleEffect_Implementation(const FVector
 예측을 넣으면 반드시 따라오는 질문이 있다.
 **"예측이 틀렸을 때 무엇을 되돌리는가?"**
 
+<details markdown="1">
+<summary>클라 예측과 서버 재검증의 어긋남 (접기/펼치기)</summary>
+
 ```cpp
 // 클라: 로컬 검증 통과 → 이펙트 재생
 if (EquippedWeapon->CurrentAmmo <= 0) return;
@@ -292,10 +340,15 @@ PlayLocalMuzzleEffect(...);                     // ← 이미 재생됐다
 if (!EquippedWeapon || !EquippedWeapon->CanFire()) return;   // ← 여기서 거부되면?
 ```
 
+</details>
+
 **총구 화염만 나고 총알은 안 나간다.** 클라이언트는 그 사실을 통보받지 못한다.
 
 이게 이론적인 이야기가 아닌 이유는 [2-4편](/devlog/EP_Replication-4)에서 짚은
 **두 개의 시계** 때문이다.
+
+<details markdown="1">
+<summary>두 개의 시계 (접기/펼치기)</summary>
 
 ```cpp
 // 클라: RequestFire
@@ -304,26 +357,38 @@ float CurrentTime = GetWorld()->GetTimeSeconds();     // 클라 로컬 시계
 float LastFireTime;                                   // 서버 로컬 시계
 ```
 
+</details>
+
 두 시계의 연사 속도 판정이 경계에서 갈리면 **연사 중 간헐적으로** 이 현상이 난다.
 탄약도 마찬가지이다. 클라의 `CurrentAmmo`는 복제된 값이라 한 발 늦을 수 있다.
 
 최소한의 답은 거부를 알려주는 것이다.
+
+<details markdown="1">
+<summary>아직 없는 거부 통보 (접기/펼치기)</summary>
 
 ```cpp
 UFUNCTION(Client, Unreliable)
 void Client_FireRejected();      // 이펙트 정리 + 탄약 재동기화
 ```
 
-**아직 없다.** GAS로 가면 이건 어빌리티 **예측 키(prediction key)**와
-서버 확정/거부에 따른 롤백으로 처리된다.
+</details>
+
+**아직 없다.** GAS의 어빌리티 **예측 키(prediction key)**와
+서버 확정, 거부에 따른 롤백으로 풀 생각이다.
 *"예측은 넣었는데 롤백은 없다"*, 그게 4단계로 넘어가는 동기 중 하나이다.
 
 ### 그리고 데디케이티드 서버에서도 이펙트를 만들고 있다
+
+<details markdown="1">
+<summary>서버에서도 도는 이펙트 코드 (접기/펼치기)</summary>
 
 ```cpp
 if (OwnerChar && OwnerChar->IsLocallyControlled()) return;
 PlayLocalMuzzleEffect(Loc);
 ```
+
+</details>
 
 Multicast RPC는 **서버에서도 실행된다**(서버가 자기 자신에게도 호출).
 데디케이티드 서버에서 `IsLocallyControlled()`는 항상 거짓이라 **가드를 통과**하고,
@@ -331,11 +396,19 @@ Multicast RPC는 **서버에서도 실행된다**(서버가 자기 자신에게�
 
 렌더링이 없어 대부분 무의미하지만 공짜는 아니다.
 
+<details markdown="1">
+<summary>데디케이티드 서버 가드 (접기/펼치기)</summary>
+
 ```cpp
 if (GetNetMode() == NM_DedicatedServer) return;
 ```
 
+</details>
+
 ### 탄착 이펙트는 히트마다 나간다
+
+<details markdown="1">
+<summary>히트마다 나가는 탄착 이펙트 (접기/펼치기)</summary>
 
 ```cpp
 for (const FHitResult& Hit : ConfirmedHits)
@@ -345,6 +418,8 @@ for (const FHitResult& Hit : ConfirmedHits)
 }
 ```
 
+</details>
+
 지금은 히트스캔 1발이라 괜찮지만, `Directions`를 **배열로 받는** 구조
 (= 산탄총을 염두에 둔 설계)에서 펠릿 8개면 **Multicast 8회**이다.
 배열로 묶어 한 번에 보내야 한다.
@@ -352,6 +427,9 @@ for (const FHitResult& Hit : ConfirmedHits)
 ---
 
 ## `ClientFireTime`: 시계를 맞춘다
+
+<details markdown="1">
+<summary>Input_Fire (접기/펼치기)</summary>
 
 ```cpp
 void AEPCharacter::Input_Fire(const FInputActionValue& Value)
@@ -369,6 +447,8 @@ void AEPCharacter::Input_Fire(const FInputActionValue& Value)
         ClientFireTime);
 }
 ```
+
+</details>
 
 | | `GetWorld()->GetTimeSeconds()` | `GS->GetServerWorldTimeSeconds()` |
 |---|---|---|
@@ -396,9 +476,12 @@ SSR의 `HitboxHistory`도 같은 시계로 기록하므로 **되돌릴 시각이
 ## 래그돌 사망 시 머리카락이 하늘로 솟았다
 
 **관찰:** `SetSimulatePhysics(true)`로 래그돌이 되는 순간
-Groom(머리카락·눈썹·수염)이 위로 날아갔다.
+Groom(머리카락, 눈썹, 수염)이 위로 날아갔다.
 
 **조치:** 사망 시 Groom을 숨긴다.
+
+<details markdown="1">
+<summary>Groom 숨김 처리 (접기/펼치기)</summary>
 
 ```cpp
 // Multicast_Die
@@ -411,18 +494,25 @@ if (FaceMesh)
 }
 ```
 
+</details>
+
 > **원인은 확정하지 못했다.** 이 글의 초판에는
 > *"LeaderPose가 `BoneSpaceTransforms`를 복사하는데 물리 시뮬 중에는 그게 갱신되지 않아서"*라고
 > 적었는데, **엔진 소스와 맞지 않다.**
->
-> ```cpp
-> // SkinnedMeshComponent.cpp:2187-2189  GetBoneTransform()
-> if(LeaderBoneIndex >= 0 && LeaderBoneIndex < NumLeaderTransforms)
-> {
->     return LeaderPoseComponentInst->GetComponentSpaceTransforms()[LeaderBoneIndex] * LocalToWorld;
-> }
-> ```
->
+
+<details markdown="1">
+<summary>GetBoneTransform() 엔진 소스 (접기/펼치기)</summary>
+
+```cpp
+// SkinnedMeshComponent.cpp:2187-2189  GetBoneTransform()
+if(LeaderBoneIndex >= 0 && LeaderBoneIndex < NumLeaderTransforms)
+{
+    return LeaderPoseComponentInst->GetComponentSpaceTransforms()[LeaderBoneIndex] * LocalToWorld;
+}
+```
+
+</details>
+
 > 팔로워는 리더의 **`ComponentSpaceTransforms`**를 읽는다.
 > 물리가 갱신하는 것도 그 배열이다. 즉 Face는 래그돌을 **정상적으로 따라간다.**
 > 내 설명대로라면 얼굴이 통째로 멈춰야 하는데, 실제로는 그렇지 않다.
@@ -477,7 +567,7 @@ if (FaceMesh)
 
 정직하게 적어둔다. 전부 4단계 이후의 숙제이다.
 
-- **`Origin`·`ClientFireTime` 미검증**: 클라이언트 주장을 그대로 신뢰
+- **`Origin`, `ClientFireTime` 미검증**: 클라이언트 주장을 그대로 신뢰
 - **예측 실패 시 롤백 없음**. GAS 예측 키로 해결 예정
 - **본 배율 맵 제거**: PhysicalMaterial + GameplayTag로 통일
 - **데디 서버 이펙트 가드** / **탄착 Multicast 묶기**
@@ -487,9 +577,9 @@ if (FaceMesh)
 ## 다음 단계
 
 3단계까지는 **직접 만든 시스템**이었다.
-4단계에서는 그걸 **GAS 위에 다시 세운다**.
-`Server_Fire`는 `GA_Item_PrimaryUse`로, `TakeDamage`는 `GameplayEffect`로,
-그리고 여기서 못 한 **예측 롤백**이 어빌리티 예측 키로 들어온다.
+4단계에서는 그걸 **GAS 위에 다시 세울 계획이다.**
+발사와 대미지 경로를 어빌리티와 GameplayEffect로 옮기고,
+여기서 못 한 **예측 롤백**도 그 위에서 풀 생각이다.
 
 SSR은 그대로 남는다. 처음부터 그러라고 컴포넌트로 떼어놨다.
 

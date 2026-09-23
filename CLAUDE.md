@@ -28,6 +28,15 @@ Deployment is automatic: `.github/workflows/jekyll.yml` runs `bundle exec jekyll
 - Standard post front matter: `title`, `excerpt`, `categories`, `tags`, `toc`/`toc_sticky`, `date`, `last_modified_at`; add `mermaid: true` when a post embeds Mermaid diagrams.
 - `_data/navigation.yml` drives the top nav bar.
 
+## `_posts/game_dev/{devlog,portfolio}` — writing style
+
+See **`WRITING_STYLE.md`** at repo root before drafting or editing a post in these two folders.
+It covers the DevLog(안 고친다)/Portfolio(고친다) split, sentence-level rules (no em-dash, no
+middot, avoid "~인가" endings, no vague-teaser headings), folding code into
+`<details markdown="1">`, table/mermaid usage, and the rule that DevLog posts must not reference
+devlog chapters written later than the one being edited. Read it in full before touching these
+posts — don't rely on memory of past sessions.
+
 ### `_posts/routine/` — personal retrospective journal
 
 Not code documentation — a recurring personal-retrospective log with four cadences (`daily`, `weekly`, `monthly`, `yearly`), each further nested by year/month for `daily`. Every entry follows the same **5F template** (Fact / Feeling / Finding / Future action / Feedback), with the Feedback section structured as an S/B/I/N/F table plus a closing direct-comment paragraph, and a final "🌙 남기는 말" one-liner. When drafting a new entry in this folder, match the existing tone and structure exactly rather than inventing a new format — look at a recent file in the same cadence folder as the template.

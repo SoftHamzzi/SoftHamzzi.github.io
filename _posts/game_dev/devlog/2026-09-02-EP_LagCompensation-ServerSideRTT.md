@@ -1,5 +1,5 @@
 ---
-title:  "[UE5] 추출 슈터: 발사 시각은 누가 재는가"
+title:  "[UE5] 익스트랙션 슈터: 발사 시각은 서버가 잰다"
 excerpt: "클라이언트 신뢰에서 서버 측정으로, RTT/2에서 RTT로. 세 번 뒤집은 끝에 도달한 자리"
 
 categories:
@@ -17,8 +17,8 @@ last_modified_at: 2026-09-02
 ---
 
 📌 [3-2. 서버 사이드 리와인드: 두 함수가 다른 프레임의 시계를 보고 있었다](/devlog/EP_NetPrediction-2)의
-"정직하게 ①"에서 남겨둔 숙제를 실제로 풀어본 기록입니다.
-[👾 깃허브](https://github.com/SoftHamzzi/UE5-EmploymentProj) ·
+"정직하게 ①"에서 남겨둔 숙제를 실제로 풀어본 기록입니다.  
+[👾 깃허브](https://github.com/SoftHamzzi/UE5-EmploymentProj)  
 [📚 시리즈 목차](/devlog/EP_Main)
 {: .notice--info}
 
@@ -32,12 +32,17 @@ last_modified_at: 2026-09-02
 그런데 실제로 코드를 다시 열어보니 문제가 그보다 심각했다. GAS로 전환하면서 발사 경로가
 바뀌었는데, 그 자리에 남아 있던 변수 이름이 거짓말을 하고 있었다.
 
+<details markdown="1">
+<summary>이름과 값이 어긋난 코드 (접기/펼치기)</summary>
+
 ```cpp
 // GA_Item_PrimaryUse.cpp, 서버 브랜치
 const float ClientTime = GS ? GS->GetServerWorldTimeSeconds() : Char->GetWorld()->GetTimeSeconds();
 ...
 Combat->HandleServerFire(Origin, Char->GetControlRotation().Vector(), ClientTime);
 ```
+
+</details>
 
 이름은 `ClientTime`인데 값은 **서버가 그 자리에서 읽은 자기 시계**다. 클라이언트 발사 시각을
 서버로 나르던 경로(`Server_Fire` RPC)가 GAS 전환 때 사라지면서, 서버 브랜치가 자기 시계로
@@ -71,6 +76,9 @@ ValidatedDelay = Clamp(ClaimedDelay, ExpectedDelay ± Tolerance)
 `ClientFireTime`은 클라이언트의 `GetServerWorldTimeSeconds()`로 만들어진다. 이 함수를
 직접 열어보면:
 
+<details markdown="1">
+<summary>GetServerWorldTimeSeconds (접기/펼치기)</summary>
+
 ```cpp
 // GameStateBase.cpp
 double AGameStateBase::GetServerWorldTimeSeconds() const
@@ -79,6 +87,8 @@ double AGameStateBase::GetServerWorldTimeSeconds() const
     return World->GetTimeSeconds() + ServerWorldTimeSecondsDelta;
 }
 ```
+
+</details>
 
 클라이언트의 `ServerWorldTimeSecondsDelta`는 서버→클라 편도 지연(`D`)만큼 편향돼 있다.
 왕복(`U+D`) 보정이 아니라 **편도 보정**이다. 대입해서 유도하면:
@@ -101,7 +111,7 @@ ClaimedDelay   = ServerNow - ClientFireTime ≈ U + D = RTT 전체
 `Tolerance` 문제가 아니라 재료 자체(`ClientFireTime`)가 문제라는 뜻이다.
 
 원인은 같은 함수였다. `GetServerWorldTimeSeconds()`의 클라-서버 편향은 클라이언트의
-캘리브레이션 패킷이 정기적으로, 제때 도착한다는 전제 위에 있다. 패킷 유실·지터가 심한
+캘리브레이션 패킷이 정기적으로, 제때 도착한다는 전제 위에 있다. 패킷 유실이나 지터가 심한
 네트워크에서는 이 전제 자체가 흔들리고, `ClientFireTime`은 정직한 클라이언트에서도
 예측 불가능하게 흔들린다.
 
@@ -116,6 +126,9 @@ ClaimedDelay   = ServerNow - ClientFireTime ≈ U + D = RTT 전체
 `Epic Games`의 공식 UnrealTournament 소스를 열어봤다. `AUTCharacter::GetRewindLocation`과
 `AUTPlayerController::GetPredictionTime`이 하는 일은 이랬다.
 
+<details markdown="1">
+<summary>UT의 GetPredictionTime (접기/펼치기)</summary>
+
 ```cpp
 // UTPlayerController.cpp
 float AUTPlayerController::GetPredictionTime()
@@ -126,9 +139,14 @@ float AUTPlayerController::GetPredictionTime()
 }
 ```
 
+</details>
+
 클라이언트는 발사 시각을 아예 보고하지 않는다. 서버가 이미 알고 있는 그 사수의 핑만으로
 "얼마나 되돌릴지"를 혼자 결정한다. `ClientFireTime`이라는 개념 자체가 없으니, 클라-서버
 시계 편향 문제가 애초에 들어올 자리가 없다.
+
+<details markdown="1">
+<summary>ComputeRewindTime (접기/펼치기)</summary>
 
 ```cpp
 float UEPServerSideRewindComponent::ComputeRewindTime(
@@ -148,6 +166,8 @@ float UEPServerSideRewindComponent::ComputeRewindTime(
 }
 ```
 
+</details>
+
 `Server_ConfirmFire` RPC는 그대로 두되, 이제 `Origin`/`Direction`만 싣는다. 시각을 실어
 보낼 이유가 없다.
 
@@ -162,10 +182,15 @@ float UEPServerSideRewindComponent::ComputeRewindTime(
 UT를 그대로 따라 `RTT/2`로 시작했다. 200/200(들어오고 나가는 지연 각각 200ms) 환경에서
 실제로 쏴봤다.
 
+<details markdown="1">
+<summary>RTT/2 실측 로그 (접기/펼치기)</summary>
+
 ```
 [SSR] ServerNow=29.103 PredictionDelay=0.196, Candidates=1
 [SERVER_REWIND_POS] RewindTime=28.595 ...
 ```
+
+</details>
 
 **표적이 화면에 보이는 위치보다 캐릭터 너비만큼 앞을 쏴야 맞았다.** 리와인드가 부족했다.
 
@@ -190,9 +215,14 @@ RewindTime = A - D - InterpDelay
 
 `*0.5`를 지우고 `RTT` 전체 + `InterpDelay`(표적 CMC의 스무딩 지연, 0.1초)로 다시 쐈다.
 
+<details markdown="1">
+<summary>RTT 전체 실측 로그 (접기/펼치기)</summary>
+
 ```
 [SSR] ServerNow=29.103 PredictionDelay=0.408, Candidates=1
 ```
+
+</details>
 
 **이번엔 반대로 캐릭터 너비만큼 뒤를 쏴야 맞았다.** 과보정이었다.
 
@@ -216,7 +246,7 @@ RewindTime      = ServerNow - PredictionDelay
 
 ---
 
-## 이론과 실측이 왜 어긋났는가
+## 이론과 실측이 어긋난 이유
 
 `InterpDelay`를 이론적으로 유도했을 때 근거로 삼은 건 Valve의 Source 엔진 공식 렉 보상
 문서였다.
@@ -235,7 +265,7 @@ UT의 실제 선택이 어긋나는지 명확한 원인까지는 못 찾았다. 
 
 ---
 
-## 업계는 어느 쪽을 더 쓰는가
+## 업계가 더 쓰는 쪽
 
 찾아본 김에 정리해둔다.
 
@@ -269,14 +299,14 @@ UT라는 실제 선례가 있다는 것과, 그 선례가 **왜** 맞는지는 �
 ### ② RTT가 대칭이라는 가정 위에 있다
 
 `U`와 `D`를 따로 측정할 방법이 없어서 `RTT = U+D`만 알고 개별 값은 모른다. 극단적으로
-비대칭인 회선(일부 모바일·위성)에서는 오차가 커질 수 있다. 8인 규모 프로젝트에서는
+비대칭인 회선(일부 모바일, 위성)에서는 오차가 커질 수 있다. 8인 규모 프로젝트에서는
 지금 당장의 걱정거리는 아니다.
 
 ### ③ RPC 직접 호출은 이 수정의 범위 밖이다
 
 `Server_ConfirmFire`는 소유 커넥션이면 누구나 호출 가능한 평범한 RPC다. 클라이언트가
 보낼 수 있는 "시각" 자체가 없어졌으니 예전에 걱정했던 "유리한 순간을 골라 보낸다"는
-공격 표면은 없어졌지만, 어빌리티의 쿨다운·탄약 체크를 우회하는 반복 호출은 여전히 별개의
+공격 표면은 없어졌지만, 어빌리티의 쿨다운과 탄약 체크를 우회하는 반복 호출은 여전히 별개의
 노출이다.
 
 ---

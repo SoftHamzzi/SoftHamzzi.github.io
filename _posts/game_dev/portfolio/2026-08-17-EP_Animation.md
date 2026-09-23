@@ -34,6 +34,9 @@ Lyra의 Linked Anim Layer 방식을 따랐다.
 MetaHuman은 Body, Face, Outfit이 각각 별도 스켈레탈 메시다.
 셋이 각자 AnimInstance를 돌리면 낭비다. 그래서 Body 하나만 구동한다.
 
+<details markdown="1">
+<summary>Leader Pose 연결 (접기/펼치기)</summary>
+
 ```cpp
 FaceMesh->SetupAttachment(GetMesh());
 FaceMesh->SetLeaderPoseComponent(GetMesh());     // Body 포즈를 따라간다
@@ -41,6 +44,8 @@ FaceMesh->SetLeaderPoseComponent(GetMesh());     // Body 포즈를 따라간다
 OutfitMesh->SetupAttachment(GetMesh());
 OutfitMesh->SetLeaderPoseComponent(GetMesh());
 ```
+
+</details>
 
 Face와 Outfit은 자체 AnimInstance를 실행하지 않고 Body의 본 포즈를 그대로 받는다.
 AnimBP 하나가 전체를 구동한다.
@@ -74,10 +79,15 @@ flowchart TD
 
 교체는 런타임에 한 줄로 일어난다.
 
+<details markdown="1">
+<summary>런타임 레이어 교체 (접기/펼치기)</summary>
+
 ```cpp
 // OnRep_EquippedWeapon
 Owner->GetMesh()->LinkAnimClassLayers(NewWeapon->WeaponDef->WeaponAnimLayer);
 ```
+
+</details>
 
 `WeaponAnimLayer`가 `UEPWeaponDefinition` 안에 있다는 게 중요하다.
 **애니메이션 레이어도 무기 데이터의 일부다.** 코드에 무기별 분기가 없다.
@@ -123,6 +133,9 @@ ABP_RifleAnimLayers AnimGraph
 
 무기 메시의 `LeftHandIK` 소켓 위치를 오른손 본 기준 상대 좌표로 바꿔서 FABRIK에 넘긴다.
 
+<details markdown="1">
+<summary>NativeUpdateAnimation (접기/펼치기)</summary>
+
 ```cpp
 // NativeUpdateAnimation
 FTransform WorldLeftHandIK = WeaponMesh->GetSocketTransform(FName("LeftHandIK"));
@@ -130,6 +143,8 @@ FTransform HandR_World     = Character->GetMesh()->GetBoneTransform(FName("hand_
 
 LeftHandIKTransform = WorldLeftHandIK.GetRelativeTransform(HandR_World);
 ```
+
+</details>
 
 오른손 기준 상대 좌표로 두는 이유는 **총이 오른손에 붙어 있기 때문**이다.
 월드 좌표로 두면 캐릭터가 움직일 때마다 한 프레임씩 밀린다.
@@ -149,10 +164,15 @@ Groom 바인딩이 스켈레탈 메시의 애니메이션 포즈를 기준으로
 
 지연 보상이 본 단위로 판정하기 때문에 **서버도 애니메이션 포즈를 갱신해야 한다.**
 
+<details markdown="1">
+<summary>서버 쪽 전제 (접기/펼치기)</summary>
+
 ```cpp
 GetMesh()->VisibilityBasedAnimTickOption =
     EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 ```
+
+</details>
 
 서버는 렌더링이 없어서 기본 설정으로는 포즈를 갱신하지 않는다.
 이걸 안 켜면 히트박스 스냅샷이 정적 포즈로 고정된다.

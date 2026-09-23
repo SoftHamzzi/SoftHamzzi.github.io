@@ -53,12 +53,17 @@ CMC는 자기가 보낸 이동을 저장해뒀다가, 서버 보정이 오면 �
 
 그래서 이동 상태를 **CMC의 이동 패킷 안에 넣었다.**
 
+<details markdown="1">
+<summary>GetCompressedFlags (접기/펼치기)</summary>
+
 ```cpp
 // FSavedMove_EPCharacter::GetCompressedFlags()
 // 이동 입력과 같은 패킷에 상태를 실어 보낸다
 if (bSavedWantsToSprint) Result |= FLAG_Custom_0;
 if (bSavedWantsToADS)    Result |= FLAG_Custom_1;
 ```
+
+</details>
 
 | | Server RPC 방식 | CMC 확장 방식 |
 |---|---|---|
@@ -111,6 +116,9 @@ flowchart TD
 스냅샷의 *시각*은 `CMC::OnMovementUpdated`에서 찍고, *본 Transform*은 같은 틱의 `TG_PostPhysics`에서 읽고 있었다.
 같은 틱이니 같은 프레임이라고 믿었는데, `UWorld::Tick`의 순서가 그렇지 않았다.
 
+<details markdown="1">
+<summary>UWorld::Tick 순서 (접기/펼치기)</summary>
+
 ```cpp
 // LevelTick.cpp: UWorld::Tick
 BroadcastTickDispatch(DeltaSeconds);   // ServerMove RPC 처리. 여기서 시각을 읽었다
@@ -120,6 +128,8 @@ TimeSeconds += DeltaSeconds;           // 월드 시간은 '그 뒤'에 전진�
 ...
 RunTickGroup(TG_PrePhysics);           // 틱 그룹은 '그 다음'
 ```
+
+</details>
 
 `GetServerWorldTimeSeconds()`는 `World->GetTimeSeconds()`를 그대로 쓴다.
 그러니 **`TickDispatch`에서 읽은 시각은 직전 프레임 값이고, `PostPhysics`에서 읽은 본은 이번 프레임 값이다.**
@@ -133,6 +143,9 @@ RunTickGroup(TG_PrePhysics);           // 틱 그룹은 '그 다음'
 ### 해결: 세 값을 한 순간에 묶는다
 
 시각과 위치를 `TickDispatch`에서 **보관만** 하고, 본이 확정된 `TG_PostPhysics`에서 함께 커밋한다.
+
+<details markdown="1">
+<summary>pending을 거쳐 PostPhysics에서 커밋 (접기/펼치기)</summary>
 
 ```cpp
 // TickDispatch 시점. 본 Transform은 아직 갱신 전이므로 값만 보관한다
@@ -154,6 +167,8 @@ void UEPServerSideRewindComponent::TickComponent(...)
 }
 ```
 
+</details>
+
 | | 수정 전 | 수정 후 |
 |---|---|---|
 | `RewindPos` 오차 | **242cm** | **2.3cm** |
@@ -163,10 +178,15 @@ Bad 네트워크 프리셋 기준이다.
 
 여기에 서버 쪽 전제가 하나 더 붙는다.
 
+<details markdown="1">
+<summary>서버 쪽 전제 (접기/펼치기)</summary>
+
 ```cpp
 GetMesh()->VisibilityBasedAnimTickOption =
     EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 ```
+
+</details>
 
 서버는 렌더링이 없어서 기본 설정으로는 포즈를 갱신하지 않는다.
 이걸 안 켜면 `TG_PostPhysics`에서 읽어도 스냅샷이 정적 포즈로 고정된다.
@@ -178,7 +198,7 @@ GetMesh()->VisibilityBasedAnimTickOption =
 
 <!-- 스크린샷: 수정 전후 리와인드 위치 비교 (파란/빨간 박스) -->
 
-> 자세한 구현: [히트박스 스냅샷 구조]({% post_url 2026-03-09-EP_NetPrediction-1 %}) · [SSR 컴포넌트 구현]({% post_url 2026-03-14-EP_NetPrediction-2 %}) · [사격 흐름 통합]({% post_url 2026-03-14-EP_NetPrediction-3 %})
+> 자세한 구현: [히트박스 스냅샷 구조]({% post_url 2026-03-09-EP_NetPrediction-1 %}), [SSR 컴포넌트 구현]({% post_url 2026-03-14-EP_NetPrediction-2 %}), [사격 흐름 통합]({% post_url 2026-03-14-EP_NetPrediction-3 %})
 
 ## 3. 복제 설계 원칙
 
@@ -195,7 +215,7 @@ GetMesh()->VisibilityBasedAnimTickOption =
 연출은 Unreliable이다. 총구 화염 한 발이 유실돼도 게임은 굴러간다.
 반대로 상태 변경은 Reliable이어야 한다. 재장전 요청이 유실되면 무기가 영영 잠긴다.
 
-> 자세한 내용: [멀티플레이어 복제 설계]({% post_url 2026-03-01-EP_Replication-5 %}) · [서버 권한형 매치 흐름]({% post_url 2026-02-08-EP_Gameplay_Framework-3 %})
+> 자세한 내용: [멀티플레이어 복제 설계]({% post_url 2026-03-01-EP_Replication-5 %}), [서버 권한형 매치 흐름]({% post_url 2026-02-08-EP_Gameplay_Framework-3 %})
 
 ## 4. 디버그 시각화
 
@@ -210,11 +230,16 @@ GetMesh()->VisibilityBasedAnimTickOption =
 
 `UEPCombatDeveloperSettings`에서 켜고 끈다. 셰이핑 빌드에서는 컴파일 자체가 빠진다.
 
+<details markdown="1">
+<summary>Shipping 빌드 가드 (접기/펼치기)</summary>
+
 ```cpp
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
     // 디버그 드로우
 #endif
 ```
+
+</details>
 
 ## 남은 것
 
