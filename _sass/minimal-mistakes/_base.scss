@@ -13,7 +13,7 @@ body {
   padding: 0;
   color: $text-color;
   font-family: $global-font-family;
-  line-height: 1.5;
+  line-height: 1.7;
 
   &.overflow--hidden {
     /* when primary navigation is visible, the content in the background won't scroll */
@@ -154,6 +154,14 @@ kbd,
 samp,
 pre {
   font-family: $monospace;
+}
+
+code {
+  font-size: 0.9em;
+}
+
+pre code {
+  font-size: 1em; // sized by the .highlighter-rouge/figure.highlight wrapper instead
 }
 
 pre {

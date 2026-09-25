@@ -68,6 +68,21 @@ body {
   }
 }
 
+.page__inner-wrap {
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  padding-top: 1.5em;
+  padding-bottom: 1.5em;
+  background-color: mix(#000, $background-color, 8%);
+  border-radius: $border-radius;
+
+  > header {
+    padding-bottom: 1.5em;
+    margin-bottom: 1.5em;
+    border-bottom: 1px solid $border-color;
+  }
+}
+
 .page__title {
   margin-top: 0;
   line-height: 1;
@@ -89,7 +104,7 @@ body {
 }
 
 .page__content {
-  margin-top: 20px; // 추가됨
+  margin-top: 0;
 
   h2 {
     padding-bottom: 0.5em;
@@ -367,6 +382,7 @@ body {
   border-radius: $border-radius;
   background-color: #4D5357;
   font-family: $serif;
+  font-size: 0.75em;
   color: $primary-color;
 
   &:hover {
@@ -385,6 +401,7 @@ body {
   border-radius: $border-radius;
   background-color: mix(#fff, #4D5357, 18%);
   font-family: $serif;
+  font-size: 0.75em;
   color: mix(#fff, $primary-color, 2%);;
 
   &:hover {

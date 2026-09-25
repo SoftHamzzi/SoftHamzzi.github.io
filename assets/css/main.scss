@@ -5,17 +5,17 @@ search: false
 
 @charset "utf-8";
 
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/static/split/WantedSans.min.css');
+
+// Wanted Sans everywhere - natural letter proportions, reads well at both
+// heading and body sizes, full weight range so no font-weight mismatch
+$sans-serif: "Wanted Sans", -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI",
+  "Helvetica Neue", "Lucida Grande", Arial, sans-serif !default;
+$header-font-family: $sans-serif !default;
+
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
 @import "minimal-mistakes"; // main partials
-
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
-
-@font-face {
-    font-family: 'omyu_pretty';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-}
 
 // GitHub Gist embed - match dark skin
 .gist {

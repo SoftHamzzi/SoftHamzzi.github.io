@@ -18,7 +18,7 @@
 
   @include breakpoint($large) {
     float: left;
-    width: calc(#{$right-sidebar-width-narrow} - 1em);
+    width: 150px;
     opacity: 0.75;
     -webkit-transition: opacity 0.2s ease-in-out;
     transition: opacity 0.2s ease-in-out;
@@ -37,7 +37,7 @@
   }
 
   @include breakpoint($x-large) {
-    width: calc(#{$right-sidebar-width} - 1em);
+    width: 200px;
   }
 
   > * {
@@ -78,8 +78,8 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: $right-sidebar-width-narrow;
-    margin-right: -1 * $right-sidebar-width-narrow;
+    width: 170px;
+    margin-right: calc(-170px - 1.5em); // page__inner-wrap 우측 패딩만큼 보정
     padding-left: 1em;
     z-index: 10;
 
@@ -101,8 +101,8 @@
   }
 
   @include breakpoint($x-large) {
-    width: $right-sidebar-width;
-    margin-right: -1 * $right-sidebar-width;
+    width: 220px;
+    margin-right: calc(-220px - 1.5em);
   }
 }
 
