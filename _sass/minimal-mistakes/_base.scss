@@ -158,10 +158,13 @@ pre {
 
 code {
   font-size: 0.9em;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 pre code {
   font-size: 1em; // sized by the .highlighter-rouge/figure.highlight wrapper instead
+  word-break: normal; // 코드 블록 내부는 줄바꿈 대신 가로 스크롤을 유지
 }
 
 pre {
