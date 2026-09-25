@@ -31,6 +31,12 @@ last_modified_at: 2026-09-24
 높을수록 길었다.
 
 ```mermaid
+---
+config:
+  layout: dagre
+  theme: dark
+  look: handDrawn
+---
 sequenceDiagram
     participant C as 클라이언트
     participant S as 서버
@@ -83,6 +89,12 @@ Auto는 어빌리티가 살아 있는 동안 타이머가 함수를 부르는 �
 두 모드가 다른 경로를 타던 것이 애초의 원인이었으니, 경로를 하나로 만들었다.
 
 ```mermaid
+---
+config:
+  layout: dagre
+  theme: dark
+  look: handDrawn
+---
 flowchart TD
     A[Input_Fire] --> B{스펙이 활성인가}
     B -- 아니오 --> C[TryActivateAbility]
@@ -129,6 +141,12 @@ void UEPGA_Item_PrimaryUse::OnFireTimerTick()
 정하게 했다. Auto는 떼면 끝내고, Single은 무시한다.
 
 ```mermaid
+---
+config:
+  layout: dagre
+  theme: dark
+  look: handDrawn
+---
 sequenceDiagram
     participant P as 입력
     participant A as PrimaryUse 어빌리티

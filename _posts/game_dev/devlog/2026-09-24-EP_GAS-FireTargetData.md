@@ -58,6 +58,12 @@ void Server_ConfirmFire(FVector_NetQuantize Origin, FVector_NetQuantizeNormal Di
 제공하는 TargetData 경로를 쓴다.
 
 ```mermaid
+---
+config:
+  layout: dagre
+  theme: dark
+  look: handDrawn
+---
 sequenceDiagram
     participant C as 클라이언트
     participant S as 서버
@@ -173,6 +179,12 @@ Data->ClientMoveTimeStamp = CMC->GetPredictionData_Client_Character()->CurrentTi
 타임스탬프로 찾는다. 찾으면 오차가 0이다. 채널 도착 순서와 무관해진다.
 
 ```mermaid
+---
+config:
+  layout: dagre
+  theme: dark
+  look: handDrawn
+---
 sequenceDiagram
     participant C as 클라이언트
     participant M as 서버 CMC

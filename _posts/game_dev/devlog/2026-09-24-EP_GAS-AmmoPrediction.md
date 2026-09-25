@@ -34,6 +34,12 @@ Lyra는 이걸 예측하지 않는다. `ULyraAbilityCost_ItemTagStack::ApplyCost
 200ms에서 한 발 쏠 때마다 숫자가 뒤늦게 따라오는 것이 눈에 걸렸다.
 
 ```mermaid
+---
+config:
+  layout: dagre
+  theme: dark
+  look: handDrawn
+---
 sequenceDiagram
     participant C as 클라이언트
     participant S as 서버
@@ -52,6 +58,12 @@ GAS의 예측은 "클라이언트가 서버 허락 없이 미리 한 일"에 번
 응답이 오면 그 번호표가 달린 것을 정리하는 방식이다.
 
 ```mermaid
+---
+config:
+  layout: dagre
+  theme: dark
+  look: handDrawn
+---
 sequenceDiagram
     participant C as 클라이언트
     participant S as 서버
@@ -142,6 +154,12 @@ InPredictionKey.NewCaughtUpDelegate().BindUObject(Owner,
 정산이 분리돼 있지 않으니 롤백 코드를 쓸 자리가 없다.
 
 ```mermaid
+---
+config:
+  layout: dagre
+  theme: dark
+  look: handDrawn
+---
 sequenceDiagram
     participant C as 클라이언트
     participant S as 서버

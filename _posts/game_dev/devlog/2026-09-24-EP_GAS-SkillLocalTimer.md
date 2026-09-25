@@ -31,6 +31,12 @@ last_modified_at: 2026-09-24
 구간이 있었고, 핑이 높을수록 그 구간이 길었다.
 
 ```mermaid
+---
+config:
+  layout: dagre
+  theme: dark
+  look: handDrawn
+---
 sequenceDiagram
     participant C as 클라이언트
     participant S as 서버
@@ -82,6 +88,12 @@ GE로 두면 안 된다. 왕복 지연(RTT)만큼 늦게 꺼지는 값으로 게
 핑 추정을 아예 쓰지 않는 구조로 갔다.
 
 ```mermaid
+---
+config:
+  layout: dagre
+  theme: dark
+  look: handDrawn
+---
 flowchart LR
     subgraph C[클라이언트]
         CT[CooldownTimer<br/>로컬 시계 기준]
@@ -284,6 +296,12 @@ GE 제거를 기다릴 일이 없다. 이동속도는 `UEPCharacterMovement::Get
 배율과 로컬 배율을 둘 다 곱하도록 해서 캐릭터 무브먼트 컴포넌트(CMC)가 바로 읽는다.
 
 ```mermaid
+---
+config:
+  layout: dagre
+  theme: dark
+  look: handDrawn
+---
 sequenceDiagram
     participant P as 입력
     participant H as 힐 어빌리티
@@ -323,6 +341,12 @@ sequenceDiagram
 있게 됐다. 서버가 0.1초 여유를 두고 같은 판정을 하므로 정상 플레이에서 거절이 나지 않는다.
 
 ```mermaid
+---
+config:
+  layout: dagre
+  theme: dark
+  look: handDrawn
+---
 sequenceDiagram
     participant C as 클라이언트
     participant S as 서버
