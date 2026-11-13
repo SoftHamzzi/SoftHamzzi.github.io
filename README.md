@@ -1,3 +1,18 @@
+## 개인 글쓰기 작업 환경 (2026-11-11)
+
+| Tern 탭 | 작업 폴더 | 요청 예시 |
+|---|---|---|
+| 회고·피드백 | `C:/Github/gitblog/SoftHamzzi.github.io` | "이 회고의 피드백만 써줘: `<파일 경로>`" |
+| 말랑퀴즈·작성·채점 | `C:/Github/MallangQuiz` | "말랑 퀴즈 만들어줘", 풀이 후 "이 파일 채점해줘: `<문제지 경로>`" |
+
+회고는 `.agents/skills/retro-feedback/SKILL.md`가 최신 원본을 연결한다. 기간별 과거 기록과 5F 형식을 따르며, 사용자가 작성한 Fact·Feeling·Finding·Future action·남기는 말은 보존한다. 기존 Feedback은 확인 없이 덮어쓰지 않는다.
+
+퀴즈는 MallangQuiz에서 생성한 `quiz.md`를 사용자가 `_posts/routine/mallang_quiz`로 직접 옮겨 푼다. 같은 퀴즈 탭에서 채점하면 그 문제지 옆의 `*_answer.md`와 원본 오답노트가 갱신된다. 이 블로그의 `mallang-quiz`·`mallang-grade` 스킬로 요청해도 같은 원본 절차를 따른다. 두 저장소에 대한 파일 접근이 필요하며, 로컬 지침을 읽는 데 Claude 실행이나 할당량은 필요하지 않다.
+
+설정 확인 중에는 기존 글·해답·점수·오답 기록을 수정하지 않는다. 자동 게시와 커밋·푸시는 별도 요청 없이는 하지 않는다. 아래 내용은 원본 테마 설명이다.
+
+2026-11-11 설정 검증: 새 GPT 탭이 회고 스킬과 최신 원본을 실제로 읽고 Feedback 전용 범위·기존 내용 덮어쓰기 확인을 보고했다. 오래된 이전본의 선택 학습 자동 지정은 원본 참조 방식으로 제거했다. 실제 회고 작성·채점·게시는 하지 않았으며 기존 글·해답·오답 기록을 포함한 보호 대상 368파일은 검증 전후 해시가 같았다. Claude Desktop에만 남은 대화·첨부 자료는 이전하지 않았다.
+
 # [Minimal Mistakes Jekyll theme](https://mmistakes.github.io/minimal-mistakes/)
 
 [![LICENSE](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/mmistakes/minimal-mistakes/master/LICENSE)

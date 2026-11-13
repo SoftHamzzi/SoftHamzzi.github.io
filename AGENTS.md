@@ -40,3 +40,17 @@ posts — don't rely on memory of past sessions.
 ### `_posts/routine/` — personal retrospective journal
 
 Not code documentation — a recurring personal-retrospective log with four cadences (`daily`, `weekly`, `monthly`, `yearly`), each further nested by year/month for `daily`. Every entry follows the same **5F template** (Fact / Feeling / Finding / Future action / Feedback), with the Feedback section structured as an S/B/I/N/F table plus a closing direct-comment paragraph, and a final "🌙 남기는 말" one-liner. When drafting a new entry in this folder, match the existing tone and structure exactly rather than inventing a new format — look at a recent file in the same cadence folder as the template.
+
+회고 피드백 원본은 `.claude/skills/retro-feedback/SKILL.md`, 현재 AI용 진입점은 `.agents/skills/retro-feedback/SKILL.md`다. **Feedback만 작성하고 Future action과 선택 학습은 수정하지 않는다.** 기존 피드백이 있으면 덮어쓰기 전에 확인한다.
+
+## 블로그 세션의 전용 탭
+
+Tern의 `블로그` 세션에서 `회고`와 `퀴즈` 탭을 분리해 사용한다. 화면의 세션 묶음만 같으며, 각 탭의 대화 기록과 작업 폴더는 별도로 유지한다.
+
+| 요청 | 작업 폴더와 절차 |
+|---|---|
+| 회고 피드백 | 이 블로그 루트에서 `retro-feedback` 스킬. 사용자가 지정한 회고 파일을 처리한다 |
+| 말랑퀴즈 생성·채점 | 기본은 `C:/Github/MallangQuiz`의 같은 탭에서 수행. 이 블로그에서 요청해도 `mallang-quiz`·`mallang-grade` 스킬이 원본 절차로 연결한다 |
+
+퀴즈 요청은 회고와 구분한다. `_posts/routine/mallang_quiz`는 회고 대상이 아니다. 문제지 블로그 이동은 기존처럼 사용자가 직접 한다. 실제 채점할 때만 해답 파일과 오답노트를 갱신하며, 설정 중에는 기존 글·해답·점수·오답 기록을 바꾸지 않는다. 커밋·푸시·게시는 별도 요청 없이 하지 않는다.
+
